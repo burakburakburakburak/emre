@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>English Boost</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --or:#E8A020;--ord:#B87A10;--orl:#F0C050;--orp:#2a1e00;
+  --bl:#1A73E8;--blp:#0a1a2a;
+  --gn:#16A34A;--gnp:#0a1a0a;
+  --rd:#DC2626;--rdp:#1a0a0a;
+  --pu:#7C3AED;--pup:#1a0a2a;
+  --am:#D97706;
+  --bg:#0d0d0d;--s1:#181818;--s2:#222;--s3:#2c2c2c;
+  --br:#2e2e2e;--br2:#404040;
+  --tx:#f0f0f0;--t2:#c0c0c0;--t3:#888;
+  --r:12px;--rl:18px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif}
+#app{display:flex;height:100vh;overflow:hidden}
+#sb-toggle{position:fixed;top:12px;left:12px;z-index:999;width:36px;height:36px;background:var(--or);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:#000;transition:left 0.25s ease;box-shadow:0 2px 8px rgba(0,0,0,0.4)}
+#sb{width:250px;min-width:250px;background:var(--s1);border-right:1px solid var(--br);display:flex;flex-direction:column;overflow:hidden;transition:width 0.25s,min-width 0.25s}
+#sb.collapsed{width:0;min-width:0}
+.sb-logo{padding:16px 14px 10px;border-bottom:1px solid var(--br)}
+.sb-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--or);letter-spacing:2px}
+.sb-sub{font-size:10px;color:var(--t3);margin-top:1px}
+.sb-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;padding:8px 10px;border-bottom:1px solid var(--br)}
+.ss{background:var(--s2);border-radius:7px;padding:6px 3px;text-align:center}
+.ss .v{font-size:15px;font-weight:900;color:var(--or)}
+.ss .l{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
+#sb-nav{flex:1;overflow-y:auto;padding:5px}
+.sb-sec{font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;padding:9px 7px 3px}
+.si{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:1px;position:relative;transition:all .12s}
+.si:hover{background:var(--s2);color:var(--tx)}
+.si.act{background:var(--or);color:#000}
+.si.locked{opacity:.3;cursor:not-allowed;pointer-events:none}
+.si .ic{font-size:13px;width:17px;text-align:center}
+.si .lb{flex:1}
+.si .bk{background:var(--s3);color:var(--t3);font-size:9px;font-weight:800;border-radius:999px;padding:1px 5px}
+.si.act .bk{background:rgba(0,0,0,.2);color:#000}
+.si-prog{height:3px;background:var(--s3);overflow:hidden;border-radius:2px;position:absolute;bottom:0;left:0;right:0}
+.si-pf{height:100%;background:var(--or);border-radius:2px}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.scr{display:none;flex:1;flex-direction:column;overflow-y:auto}
+.scr.act{display:flex}
+#s-home{background:var(--bg)}
+.hi{max-width:860px;margin:0 auto;width:100%;padding:22px 18px}
+.hdr{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:22px;margin-bottom:18px;position:relative;overflow:hidden}
+.hdr::after{content:'\1F1EC\1F1E7';position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:60px;opacity:.15}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--or);letter-spacing:3px;line-height:1}
+.hdr p{font-size:13px;color:var(--t2);margin-top:5px}
+.op-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin:10px 0 4px}
+.op-bar{height:7px;background:var(--s3);border-radius:999px;overflow:hidden}
+.op-f{height:100%;background:var(--or);border-radius:999px;transition:width .5s}
+.go-btn{background:var(--or);color:#000;border:none;border-radius:9px;padding:10px 22px;font-size:14px;font-weight:800;cursor:pointer;margin-top:12px;font-family:'Nunito',sans-serif}
+.go-btn:hover{background:var(--ord)}
+.ps{margin-bottom:20px}
+.ps-title{font-size:11px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.ps-title::after{content:'';flex:1;height:1px;background:var(--br)}
+.pnodes{display:flex;flex-wrap:wrap;gap:9px}
+.pn{width:128px;background:var(--s1);border:2px solid var(--br);border-radius:13px;padding:12px 9px;cursor:pointer;text-align:center;position:relative;transition:all .15s}
+.pn:hover:not(.locked){border-color:var(--or);background:var(--s2);transform:translateY(-2px)}
+.pn.nxt{border-color:var(--or);box-shadow:0 0 0 3px rgba(232,160,32,.2)}
+.pn.done{border-color:var(--gn)}
+.pn.locked{opacity:.35;cursor:not-allowed}
+.pn-ic{font-size:22px;margin-bottom:4px}
+.pn-t{font-size:11px;font-weight:800;line-height:1.2}
+.pn-s{font-size:9px;color:var(--t3);margin-top:2px}
+.pn-bar{height:3px;background:var(--s3);border-radius:2px;margin-top:6px;overflow:hidden}
+.pn-f{height:100%;background:var(--or);border-radius:2px}
+.pn.done .pn-f{background:var(--gn)}
+.pn-ck{position:absolute;top:5px;right:5px;font-size:11px}
+#s-vocab{background:var(--bg)}
+.vi{max-width:960px;margin:0 auto;width:100%;padding:22px 18px}
+.pg-t{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--or);letter-spacing:2px;margin-bottom:12px}
+.vctrls{display:flex;gap:7px;margin-bottom:11px;flex-wrap:wrap}
+.vsrch{background:var(--s2);border:1px solid var(--br);border-radius:7px;padding:6px 11px;font-size:13px;color:var(--tx);outline:none;font-family:'Nunito',sans-serif;flex:1;min-width:170px}
+.vsrch:focus{border-color:var(--or)}
+.vtag{background:var(--s2);border:1px solid var(--br);border-radius:7px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .12s}
+.vtag.on,.vtag:hover{background:var(--or);color:#000;border-color:var(--or)}
+.vtbl{width:100%;border-collapse:collapse}
+.vtbl th{text-align:left;font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;padding:6px 9px;border-bottom:1px solid var(--br)}
+.vtbl td{padding:7px 9px;border-bottom:1px solid var(--br);font-size:13px}
+.vtbl tr:hover td{background:var(--s1)}
+.vtp{display:inline-block;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700}
+.vtp.basketball{background:#0d1f33;color:#60a5fa}
+.vtp.police{background:#1a1a0d;color:#facc15}
+.vtp.got{background:#1a0d0d;color:#f87171}
+.vtp.lotr{background:#0d1a0d;color:#4ade80}
+.vtp.religion{background:#1a0d1a;color:#c084fc}
+.vtp.common{background:#0d1a1a;color:#67e8f9}
+#s-lesson{background:var(--bg)}
+.ltb{display:flex;align-items:center;gap:9px;padding:11px 16px;background:var(--s1);border-bottom:1px solid var(--br);flex-shrink:0}
+.ltb-x{background:none;border:1px solid var(--br);border-radius:6px;padding:4px 9px;color:var(--t2);cursor:pointer;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif}
+.ltb-x:hover{background:var(--s2)}
+.ltb-u{font-size:11px;font-weight:800;color:var(--or);white-space:nowrap}
+.ltb-ph{font-size:9px;color:var(--t3)}
+.ltb-pw{flex:1;height:6px;background:var(--s2);border-radius:999px;overflow:hidden}
+.ltb-p{height:100%;background:var(--or);border-radius:999px;transition:width .4s}
+.ltb-hh{display:flex;gap:3px}
+.hrt{font-size:15px;transition:all .2s}
+.hrt.lost{transform:scale(.6);filter:grayscale(1);opacity:.35}
+.lb{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.exw{width:100%;max-width:610px}
+.exc{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:22px;animation:su .22s ease}
+@keyframes su{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.exlbl{font-size:10px;font-weight:800;color:var(--or);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+.exq{font-size:20px;font-weight:900;line-height:1.3;margin-bottom:4px}
+.exs{font-size:13px;color:var(--t2);margin-bottom:12px}
+.ibox{background:var(--s2);border-radius:13px;padding:22px;text-align:center;margin-bottom:11px}
+.iit{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--or);letter-spacing:2px;line-height:1}
+.itr{font-size:17px;color:var(--t2);margin-top:4px}
+.iex{font-size:12px;color:var(--t3);margin-top:7px;padding-top:7px;border-top:1px solid var(--br);font-style:italic}
+.lbtn{display:inline-flex;align-items:center;gap:5px;background:var(--blp);color:#60a5fa;border:1px solid #1e4a8a;border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:12px;font-family:'Nunito',sans-serif}
+.lbtn:hover{background:#0d2040}
+.dir-badge{display:inline-block;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:800;margin-bottom:10px}
+.dir-badge.en{background:#0d1f33;color:#60a5fa}
+.dir-badge.tr{background:#1a0d1f;color:#c084fc}
+.lfw{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:14px 0}
+.lfch{width:34px;height:38px;border-bottom:2px solid var(--or);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900}
+.lfbl{width:34px;height:38px;border-bottom:2px solid var(--or);display:flex;align-items:center;justify-content:center}
+.lfi{width:34px;height:38px;background:transparent;border:none;outline:none;text-align:center;font-size:19px;font-weight:900;color:var(--or);font-family:'Nunito',sans-serif;text-transform:lowercase;padding:0}
+.lfi.ok{color:var(--gn)}
+.lfi.bad{color:var(--rd)}
+.lfhint{text-align:center;font-size:13px;color:var(--t3);margin-bottom:10px}
+.choices{display:flex;flex-direction:column;gap:8px}
+.chbtn{background:var(--s2);border:1.5px solid var(--br2);border-radius:10px;padding:12px 15px;font-size:14px;font-weight:700;cursor:pointer;text-align:left;font-family:'Nunito',sans-serif;color:var(--tx);transition:all .13s}
+.chbtn:hover:not(:disabled){border-color:var(--or);background:var(--orp)}
+.chbtn.correct{border-color:var(--gn)!important;background:var(--gnp)!important;color:#4ade80!important}
+.chbtn.wrong{border-color:var(--rd)!important;background:var(--rdp)!important;color:#f87171!important}
+.trow{display:flex;gap:8px;margin-top:4px}
+.tinp{flex:1;background:var(--s2);border:1.5px solid var(--br2);border-radius:10px;padding:11px 15px;font-size:17px;font-weight:700;color:var(--tx);outline:none;font-family:'Nunito',sans-serif;transition:border-color .13s}
+.tinp:focus{border-color:var(--or)}
+.tinp.correct{border-color:var(--gn)!important;background:var(--gnp)!important}
+.tinp.wrong{border-color:var(--rd)!important;background:var(--rdp)!important}
+.ckbtn{background:var(--or);color:#000;border:none;border-radius:10px;padding:11px 16px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap}
+.ckbtn:hover{background:var(--ord)}
+.sent{font-size:18px;font-weight:700;line-height:2.2;margin-bottom:9px}
+.blanki{display:inline-block;min-width:80px;border:none;border-bottom:2.5px solid var(--or);background:transparent;color:var(--tx);font-size:17px;font-weight:700;font-family:'Nunito',sans-serif;outline:none;text-align:center;padding:0 3px}
+.blanki.correct{border-bottom-color:var(--gn);color:#4ade80}
+.blanki.wrong{border-bottom-color:var(--rd);color:#f87171}
+.wbank{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.wchip{background:var(--s2);border:1.5px solid var(--br2);border-radius:7px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;transition:all .12s;user-select:none}
+.wchip:hover{border-color:var(--or);background:var(--orp)}
+.wchip.used{opacity:.2;pointer-events:none}
+.bzone{display:flex;flex-wrap:wrap;gap:6px;min-height:42px;background:var(--s2);border:1.5px dashed var(--br2);border-radius:10px;padding:9px;margin-bottom:9px;align-items:center}
+.bchip{background:var(--or);color:#000;border-radius:6px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer}
+.bchip:hover{background:var(--ord)}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mcol{display:flex;flex-direction:column;gap:6px}
+.mi{background:var(--s2);border:1.5px solid var(--br2);border-radius:10px;padding:11px 13px;font-size:13px;font-weight:700;cursor:pointer;text-align:center;transition:all .12s;line-height:1.3}
+.mi:hover:not(.matched){border-color:var(--or)}
+.mi.sel{border-color:var(--or);background:var(--orp);color:var(--or)}
+.mi.matched{border-color:var(--gn);background:var(--gnp);color:#4ade80;pointer-events:none}
+.mi.fw{border-color:var(--rd);background:var(--rdp);animation:shk .3s}
+@keyframes shk{0%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}100%{transform:translateX(0)}}
+.wfg{display:inline-grid;gap:2px;border:1px solid var(--br);border-radius:7px;padding:7px;background:var(--s2)}
+.wfc{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border-radius:4px;cursor:pointer;user-select:none;color:var(--tx);background:var(--s1);transition:background .08s}
+.wfc:hover{background:var(--s3)}
+.wfc.sel{background:var(--or);color:#000}
+.wfc.found{background:var(--gn);color:#fff;cursor:default}
+.wfts{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.wft{font-size:11px;font-weight:800;padding:3px 9px;border-radius:4px;background:var(--s2);color:var(--t3)}
+.wft.found{background:var(--gnp);color:#4ade80;text-decoration:line-through}
+.fb{display:none;border-radius:10px;padding:11px 15px;margin-top:11px;font-weight:800;font-size:13px;align-items:center;gap:7px}
+.fb.show{display:flex;animation:su .18s}
+.fb.ok{background:var(--gnp);border:1.5px solid var(--gn);color:#4ade80}
+.fb.fail{background:var(--rdp);border:1.5px solid var(--rd);color:#f87171}
+.cbtn{width:100%;padding:13px;border-radius:10px;border:none;background:var(--or);color:#000;font-size:15px;font-weight:900;cursor:pointer;margin-top:11px;font-family:'Nunito',sans-serif;display:none;transition:all .13s}
+.cbtn.show{display:block;animation:su .18s}
+.cbtn:hover{background:var(--ord)}
+#s-go{background:var(--bg);align-items:center;justify-content:center}
+.go-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:26px;max-width:470px;width:100%;text-align:center}
+.go-ic{font-size:50px;margin-bottom:9px}
+.go-ttl{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--rd);letter-spacing:2px}
+.go-sub{font-size:13px;color:var(--t2);margin:4px 0 16px}
+.mlist{text-align:left;border:1px solid var(--br);border-radius:9px;overflow:hidden;margin-bottom:16px}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;border-bottom:1px solid var(--br);font-size:13px}
+.mrow:last-child{border-bottom:none}
+.mit{color:var(--or);font-weight:800}
+.go-btns{display:flex;gap:9px}
+.go-b{flex:1;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .13s}
+.go-b.retry{background:var(--or);color:#000}
+.go-b.retry:hover{background:var(--ord)}
+.go-b.home{background:var(--s2);color:var(--tx);border:1px solid var(--br)}
+.go-b.home:hover{background:var(--s3)}
+#s-cp{background:var(--bg);align-items:center;justify-content:center}
+.cp-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:28px;max-width:490px;width:100%;text-align:center}
+.cp-tr{font-size:52px;animation:pi .5s cubic-bezier(.17,.67,.33,1.3)}
+@keyframes pi{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+.cp-ttl{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--or);letter-spacing:2px;margin-top:9px}
+.cp-stats{display:flex;gap:9px;justify-content:center;margin:14px 0}
+.cps{background:var(--s2);border-radius:9px;padding:11px 14px}
+.cps .v{font-size:22px;font-weight:900;color:var(--or)}
+.cps .l{font-size:9px;color:var(--t3);text-transform:uppercase}
+.cp-voc{text-align:left;border-top:1px solid var(--br);padding-top:11px;margin-top:7px;max-height:190px;overflow-y:auto}
+.cp-vh{font-size:11px;font-weight:800;color:var(--t3);text-transform:uppercase;margin-bottom:6px}
+.cp-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px;border-bottom:1px solid var(--br)}
+.cp-en{color:var(--or);font-weight:800}
+.cp-btns{display:flex;gap:9px;margin-top:16px}
+.cp-btn{flex:1;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .13s}
+.cp-btn.home{background:var(--s2);color:var(--tx);border:1px solid var(--br)}
+.cp-btn.home:hover{background:var(--s3)}
+.cp-btn.next{background:var(--or);color:#000}
+.cp-btn.next:hover{background:var(--ord)}
+.rvbdg{display:inline-block;background:var(--pup);border:1px solid var(--pu);color:#c084fc;font-size:10px;font-weight:800;border-radius:999px;padding:1px 7px;margin-left:5px;text-transform:uppercase}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--br2);border-radius:3px}
+</style>
+</head>
+<body>
+<button id="sb-toggle" onclick="toggleSB()" title="Toggle menu">&#9776;</button>
+<div id="app">
+  <div id="sb">
+    <div class="sb-logo">
+      <div class="sb-title">&#127468;&#127463; ENGLISH BOOST</div>
+      <div class="sb-sub">Learn English in Turkish</div>
+    </div>
+    <div class="sb-stats">
+      <div class="ss"><div class="v" id="sb-xp">0</div><div class="l">XP</div></div>
+      <div class="ss"><div class="v" id="sb-str">0</div><div class="l">Streak</div></div>
+      <div class="ss"><div class="v" id="sb-wds">0</div><div class="l">Words</div></div>
+    </div>
+    <div id="sb-nav"></div>
+  </div>
+  <div id="main">
+    <div class="scr" id="s-home"></div>
+    <div class="scr" id="s-vocab"></div>
+    <div class="scr" id="s-lesson">
+      <div class="ltb" id="ltb"></div>
+      <div class="lb"><div class="exw" id="ex-area"></div></div>
+    </div>
+    <div class="scr" id="s-go"></div>
+    <div class="scr" id="s-cp"></div>
+  </div>
+</div>
+<script>
+
+var VOCAB  = JSON.parse("{\"basketball\":[[\"basketball\",\"basketbol\",\"The basketball bounced off the rim.\"],[\"court\",\"kort / saha\",\"The court was freshly painted.\"],[\"hoop\",\"çember / pota\",\"He dunked through the hoop.\"],[\"backboard\",\"pota tahtası\",\"The ball hit the backboard.\"],[\"dribble\",\"dribling yapmak\",\"She can dribble with both hands.\"],[\"pass\",\"pas vermek\",\"Make a pass to the open player.\"],[\"shoot\",\"şut atmak\",\"Shoot before the buzzer!\"],[\"rebound\",\"ribaund / top kapma\",\"He grabbed the rebound.\"],[\"block\",\"blok / blo yapmak\",\"She got a huge block.\"],[\"steal\",\"top çalmak\",\"He made a steal and scored.\"],[\"dunk\",\"smariç / potaya basmak\",\"That dunk was incredible!\"],[\"layup\",\"lay-up\",\"She scored with a layup.\"],[\"free throw\",\"serbest atış\",\"He missed the free throw.\"],[\"three-pointer\",\"üç sayılık atış\",\"That three-pointer won the game.\"],[\"foul\",\"faul\",\"The referee called a foul.\"],[\"timeout\",\"mola / timeout\",\"The coach called a timeout.\"],[\"quarter\",\"çeyrek / periyot\",\"We are in the fourth quarter.\"],[\"overtime\",\"uzatma\",\"The game went into overtime.\"],[\"point guard\",\"organizatör oyuncu\",\"The point guard leads the offense.\"],[\"center\",\"pivot oyuncu\",\"The center dominated the paint.\"],[\"forward\",\"forvet\",\"The forward scored twenty points.\"],[\"coach\",\"antrenör\",\"The coach gave great advice.\"],[\"referee\",\"hakem\",\"The referee made a bad call.\"],[\"offense\",\"hücum\",\"Their offense is unstoppable.\"],[\"defense\",\"savunma\",\"Play better defense!\"],[\"assist\",\"asist\",\"She had ten assists tonight.\"],[\"turnover\",\"top kaybı\",\"Too many turnovers cost the game.\"],[\"fast break\",\"hızlı hücum\",\"They scored on a fast break.\"],[\"slam dunk\",\"smariç\",\"That slam dunk broke the internet.\"],[\"buzzer beater\",\"son saniye sayısı\",\"He hit a buzzer beater to win.\"],[\"championship\",\"şampiyonluk\",\"They won the championship.\"],[\"playoffs\",\"playoff / eleme\",\"The playoffs start next week.\"],[\"MVP\",\"En Değerli Oyuncu\",\"She was named MVP.\"],[\"bench\",\"yedek kulübesi\",\"He came off the bench to score.\"],[\"screen\",\"blok kurmak\",\"Set a screen for the shooter.\"],[\"zone defense\",\"bölge savunması\",\"They played a zone defense.\"],[\"man-to-man\",\"adam adama savunma\",\"Switch to man-to-man defense.\"],[\"jump shot\",\"sıçrama şutu\",\"Her jump shot is perfect.\"],[\"alley-oop\",\"alley-oop\",\"They completed an alley-oop.\"],[\"pick and roll\",\"pick and roll\",\"Run the pick and roll play.\"]],\"police\":[[\"arrest\",\"tutuklama / tutuklamak\",\"The officer made an arrest.\"],[\"suspect\",\"şüpheli\",\"The suspect fled the scene.\"],[\"evidence\",\"delil / kanıt\",\"The evidence was clear.\"],[\"witness\",\"tanık\",\"The witness saw everything.\"],[\"crime\",\"suç\",\"The crime happened at midnight.\"],[\"criminal\",\"suçlu\",\"The criminal was caught.\"],[\"detective\",\"dedektif\",\"The detective solved the case.\"],[\"investigation\",\"soruşturma\",\"The investigation took months.\"],[\"warrant\",\"arama kararı / izin belgesi\",\"They got a search warrant.\"],[\"handcuffs\",\"kelepçe\",\"The officer put on handcuffs.\"],[\"badge\",\"rozet\",\"Show me your badge.\"],[\"patrol\",\"devriye\",\"The officer was on patrol.\"],[\"headquarters\",\"merkez / karargah\",\"Report to headquarters.\"],[\"interrogation\",\"sorgu / sorgulama\",\"The interrogation lasted hours.\"],[\"alibi\",\"mazeret / suçsuzluk kanıtı\",\"He had a solid alibi.\"],[\"motive\",\"sebep / güdü\",\"What was the motive?\"],[\"forensics\",\"adli tıp\",\"Forensics found fingerprints.\"],[\"fingerprint\",\"parmak izi\",\"They matched the fingerprint.\"],[\"guilty\",\"suçlu\",\"The jury found him guilty.\"],[\"innocent\",\"masum\",\"She was proven innocent.\"],[\"verdict\",\"karar / hüküm\",\"The verdict shocked everyone.\"],[\"trial\",\"dava / yargılama\",\"The trial lasted two weeks.\"],[\"judge\",\"hakim / yargıç\",\"The judge made a decision.\"],[\"lawyer\",\"avukat\",\"He hired a good lawyer.\"],[\"testimony\",\"ifade / tanıklık\",\"Her testimony was powerful.\"],[\"sentence\",\"ceza / hüküm\",\"He received a ten-year sentence.\"],[\"prison\",\"hapishane\",\"She was sent to prison.\"],[\"parole\",\"şartlı tahliye\",\"He was released on parole.\"],[\"robbery\",\"soygun\",\"The robbery was caught on camera.\"],[\"murder\",\"cinayet\",\"The murder shocked the city.\"],[\"fraud\",\"dolandırıcılık\",\"He was charged with fraud.\"],[\"smuggling\",\"kaçakçılık\",\"They were caught smuggling.\"],[\"ransom\",\"fidye\",\"They demanded a ransom.\"],[\"hostage\",\"rehine\",\"The hostage was released safely.\"],[\"undercover\",\"gizli / sivil\",\"She was working undercover.\"],[\"surveillance\",\"gözetim / takip\",\"They set up surveillance cameras.\"],[\"forensic\",\"adli / forensik\",\"The forensic team arrived.\"],[\"officer\",\"memur / polis memuru\",\"The officer helped the child.\"],[\"sergeant\",\"çavuş / komiser yardımcısı\",\"Sergeant Smith gave orders.\"],[\"captain\",\"kaptan / başkomiser\",\"The captain led the unit.\"]],\"got\":[[\"throne\",\"taht\",\"He sat on the Iron Throne.\"],[\"king\",\"kral\",\"The king ruled the Seven Kingdoms.\"],[\"queen\",\"kraliçe\",\"The queen commanded her army.\"],[\"dragon\",\"ejderha\",\"The dragon burned the city.\"],[\"sword\",\"kılıç\",\"He drew his sword.\"],[\"knight\",\"şövalye\",\"The knight protected the king.\"],[\"castle\",\"kale\",\"They attacked the castle.\"],[\"war\",\"savaş\",\"War is coming to Westeros.\"],[\"betrayal\",\"ihanet\",\"The betrayal shocked everyone.\"],[\"honor\",\"şeref / onur\",\"He died with honor.\"],[\"prophecy\",\"kehanet / kehanet\",\"The prophecy came true.\"],[\"exile\",\"sürgün\",\"She lived in exile for years.\"],[\"alliance\",\"ittifak\",\"They formed an alliance.\"],[\"ambush\",\"pusu\",\"The army fell into an ambush.\"],[\"siege\",\"kuşatma\",\"The siege lasted for months.\"],[\"raven\",\"kuzgun\",\"A raven brought the message.\"],[\"wildfire\",\"yeşil ateş / yabanates\",\"Wildfire burned the fleet.\"],[\"direwolf\",\"direwolf / dişi kurt\",\"The direwolf protected the children.\"],[\"bastard\",\"piç / gayrimeşru çocuk\",\"He was called a bastard.\"],[\"oath\",\"yemin / ant\",\"He swore an oath.\"],[\"lord\",\"lord / bey\",\"The lord called his banners.\"],[\"lady\",\"hanım / bayan\",\"The lady refused the offer.\"],[\"realm\",\"krallık / diyar\",\"He wanted to rule the realm.\"],[\"council\",\"meclis / konsey\",\"The small council met in secret.\"],[\"assassin\",\"suikastçı\",\"The assassin struck at night.\"],[\"dungeon\",\"zindan / kafes\",\"He was locked in the dungeon.\"],[\"feast\",\"şölen / ziyafet\",\"They held a great feast.\"],[\"maester\",\"meyster (bilge)\",\"The maester healed the wound.\"],[\"banner\",\"sancak / bayrak\",\"Raise the banner of House Stark.\"],[\"kingdom\",\"krallık\",\"Seven kingdoms united under one rule.\"],[\"heir\",\"varis / mirasçı\",\"She is the rightful heir.\"],[\"ransom\",\"fidye\",\"They paid the ransom.\"],[\"poison\",\"zehir\",\"She used poison to kill him.\"],[\"crow\",\"karga / Gecenin Muhafızı\",\"He joined the Night's Watch.\"],[\"wall\",\"duvar / Sur\",\"The Wall protects the realm.\"],[\"wildling\",\"vahşi / yaban insan\",\"The wildlings crossed the Wall.\"],[\"white walker\",\"Beyaz Gezgin\",\"The White Walkers are coming.\"],[\"conquest\",\"fetih / ele geçirme\",\"The conquest changed everything.\"],[\"tournament\",\"turnuva\",\"The tournament drew many knights.\"],[\"marriage\",\"evlilik\",\"The marriage was political.\"]],\"lotr\":[[\"ring\",\"yüzük\",\"One ring to rule them all.\"],[\"wizard\",\"büyücü\",\"The wizard arrived at dawn.\"],[\"elf\",\"elf\",\"The elf had pointed ears.\"],[\"dwarf\",\"cüce\",\"The dwarf wielded an axe.\"],[\"hobbit\",\"hobbit\",\"The hobbit left the Shire.\"],[\"fellowship\",\"yoldaşlık / topluluk\",\"The fellowship set out together.\"],[\"quest\",\"görev / macera\",\"They began their quest.\"],[\"darkness\",\"karanlık\",\"Darkness covered the land.\"],[\"courage\",\"cesaret\",\"She showed great courage.\"],[\"evil\",\"kötülük\",\"Evil was defeated at last.\"],[\"power\",\"güç\",\"The ring had great power.\"],[\"shadow\",\"gölge\",\"A shadow fell over Middle-earth.\"],[\"ancient\",\"kadim / eski\",\"The ancient ruins still stood.\"],[\"destiny\",\"kader\",\"He could not escape his destiny.\"],[\"journey\",\"yolculuk\",\"The journey was long and hard.\"],[\"enemy\",\"düşman\",\"The enemy gathered its forces.\"],[\"forest\",\"orman\",\"They passed through the dark forest.\"],[\"mountain\",\"dağ\",\"The mountain was covered in snow.\"],[\"burden\",\"yük\",\"The ring was a great burden.\"],[\"hope\",\"umut\",\"There was still hope.\"],[\"greed\",\"açgözlülük\",\"Greed corrupted the dwarves.\"],[\"army\",\"ordu\",\"The army marched at dawn.\"],[\"shield\",\"kalkan\",\"He raised his shield.\"],[\"arrow\",\"ok\",\"The elf fired an arrow.\"],[\"axe\",\"balta\",\"The dwarf threw his axe.\"],[\"staff\",\"asa\",\"The wizard raised his staff.\"],[\"map\",\"harita\",\"They followed the ancient map.\"],[\"gate\",\"kapı / geçit\",\"The Black Gate was sealed.\"],[\"fire\",\"ateş\",\"The dragon breathed fire.\"],[\"doom\",\"yıkım / kıyamet\",\"Mount Doom was their destination.\"],[\"fellowship\",\"yoldaşlık\",\"The Fellowship of the Ring formed.\"],[\"immortal\",\"ölümsüz\",\"The elves are immortal.\"],[\"mortal\",\"ölümlü\",\"Men are mortal.\"],[\"ancient\",\"kadim\",\"The ancient languages were forgotten.\"],[\"creature\",\"yaratık\",\"Strange creatures lived there.\"],[\"oath\",\"yemin\",\"He broke his oath.\"],[\"betrayal\",\"ihanet\",\"Betrayal weakened the fellowship.\"],[\"sacrifice\",\"fedakarlık\",\"Her sacrifice saved them all.\"],[\"wisdom\",\"bilgelik\",\"The wizard spoke with wisdom.\"],[\"corruption\",\"yozlaşma / bozulma\",\"The ring caused corruption.\"]],\"religion\":[[\"god\",\"tanrı / Allah\",\"People pray to god.\"],[\"faith\",\"inanç / iman\",\"She had strong faith.\"],[\"prayer\",\"dua\",\"He said a prayer.\"],[\"temple\",\"tapınak\",\"They built a temple.\"],[\"church\",\"kilise\",\"The church bell rang.\"],[\"mosque\",\"cami\",\"The mosque was beautiful.\"],[\"synagogue\",\"sinagog\",\"They visited the synagogue.\"],[\"prophet\",\"peygamber\",\"The prophet delivered a message.\"],[\"scripture\",\"kutsal yazı / kitap\",\"The scripture was read aloud.\"],[\"bible\",\"İncil\",\"She read the Bible.\"],[\"quran\",\"Kuran\",\"He memorized the Quran.\"],[\"torah\",\"Tevrat\",\"The Torah is sacred.\"],[\"angel\",\"melek\",\"An angel appeared in the dream.\"],[\"devil\",\"şeytan\",\"The devil tempted him.\"],[\"heaven\",\"cennet\",\"She believed in heaven.\"],[\"hell\",\"cehennem\",\"He feared hell.\"],[\"soul\",\"ruh\",\"The soul lives forever.\"],[\"sin\",\"günah\",\"He confessed his sins.\"],[\"blessing\",\"bereket / dua\",\"She gave her blessing.\"],[\"holy\",\"kutsal\",\"This is a holy place.\"],[\"sacred\",\"kutsal / dokunulmaz\",\"The sacred text was protected.\"],[\"ritual\",\"ritüel / ayin\",\"The ritual was performed at sunrise.\"],[\"worship\",\"ibadet etmek\",\"They gathered to worship.\"],[\"pilgrimage\",\"hac / kutsal yolculuk\",\"She went on a pilgrimage.\"],[\"monk\",\"rahip / keşiş\",\"The monk lived simply.\"],[\"nun\",\"rahibe\",\"The nun helped the poor.\"],[\"priest\",\"papaz\",\"The priest led the service.\"],[\"imam\",\"imam\",\"The imam led the prayer.\"],[\"rabbi\",\"haham\",\"The rabbi taught the children.\"],[\"miracle\",\"mucize\",\"The miracle amazed everyone.\"],[\"resurrection\",\"diriliş / yeniden doğuş\",\"The resurrection is central to faith.\"],[\"creation\",\"yaratılış\",\"The creation story is ancient.\"],[\"afterlife\",\"ahiret / öteki dünya\",\"He believed in the afterlife.\"],[\"salvation\",\"kurtuluş\",\"She sought salvation.\"],[\"meditation\",\"meditasyon\",\"Meditation brings inner peace.\"],[\"karma\",\"karma\",\"Good deeds bring good karma.\"],[\"reincarnation\",\"reenkarnasyon / yeniden doğuş\",\"He believed in reincarnation.\"],[\"enlightenment\",\"aydınlanma / nirvana\",\"The monk reached enlightenment.\"],[\"atheist\",\"ateist\",\"He is an atheist.\"],[\"agnostic\",\"agnostik\",\"She identifies as agnostic.\"]],\"common\":[[\"time\",\"zaman\",\"There is no time to waste.\"],[\"year\",\"yıl\",\"This year was amazing.\"],[\"people\",\"insanlar\",\"People gathered in the square.\"],[\"way\",\"yol / yön\",\"Which way should we go?\"],[\"day\",\"gün\",\"It was a beautiful day.\"],[\"man\",\"adam / erkek\",\"The man walked away.\"],[\"woman\",\"kadın\",\"The woman smiled.\"],[\"child\",\"çocuk\",\"The child laughed.\"],[\"world\",\"dünya\",\"The world is changing fast.\"],[\"life\",\"hayat\",\"Life is full of surprises.\"],[\"hand\",\"el\",\"He raised his hand.\"],[\"part\",\"parça / bölüm\",\"This is the best part.\"],[\"place\",\"yer / mekan\",\"This is a great place.\"],[\"case\",\"durum / dava\",\"In that case, I agree.\"],[\"week\",\"hafta\",\"See you next week.\"],[\"company\",\"şirket / topluluk\",\"She started a company.\"],[\"system\",\"sistem\",\"The system needs an update.\"],[\"program\",\"program\",\"The program runs smoothly.\"],[\"question\",\"soru\",\"That is a great question.\"],[\"government\",\"hükümet\",\"The government passed a new law.\"],[\"number\",\"sayı / numara\",\"What is your number?\"],[\"night\",\"gece\",\"It was a dark night.\"],[\"point\",\"nokta / puan\",\"That is a good point.\"],[\"home\",\"ev / yuva\",\"She went home early.\"],[\"water\",\"su\",\"Drink more water.\"],[\"room\",\"oda\",\"The room was empty.\"],[\"mother\",\"anne\",\"His mother called him.\"],[\"area\",\"alan / bölge\",\"This area is dangerous.\"],[\"money\",\"para\",\"Money is not everything.\"],[\"story\",\"hikaye\",\"Tell me the story.\"],[\"fact\",\"gerçek / olgu\",\"That is a fact.\"],[\"month\",\"ay\",\"She leaves next month.\"],[\"lot\",\"çok / lot\",\"There is a lot to do.\"],[\"right\",\"sağ / doğru / hak\",\"You have the right to speak.\"],[\"study\",\"çalışmak / çalışma\",\"She likes to study.\"],[\"book\",\"kitap\",\"I read that book.\"],[\"eye\",\"göz\",\"She has blue eyes.\"],[\"job\",\"iş / meslek\",\"He got a new job.\"],[\"word\",\"kelime / söz\",\"Choose your words carefully.\"],[\"business\",\"iş / ticaret\",\"Business is going well.\"],[\"issue\",\"mesele / sorun\",\"That is a big issue.\"],[\"side\",\"taraf / yan\",\"Stand by my side.\"],[\"kind\",\"tür / nazik\",\"What kind is it?\"],[\"head\",\"baş / kafa\",\"Use your head.\"],[\"house\",\"ev / konut\",\"They bought a house.\"],[\"service\",\"hizmet\",\"The service was excellent.\"],[\"friend\",\"arkadaş\",\"She is my best friend.\"],[\"father\",\"baba\",\"His father was a doctor.\"],[\"power\",\"güç / iktidar\",\"Knowledge is power.\"],[\"hour\",\"saat\",\"Wait one hour.\"],[\"be\",\"olmak\",\"I want to be happy.\"],[\"have\",\"sahip olmak\",\"I have a dog.\"],[\"do\",\"yapmak\",\"What do you do?\"],[\"say\",\"demek / söylemek\",\"What did she say?\"],[\"go\",\"gitmek\",\"Let us go now.\"],[\"get\",\"almak / olmak\",\"Did you get my message?\"],[\"make\",\"yapmak / üretmek\",\"She can make anything.\"],[\"know\",\"bilmek\",\"I know the answer.\"],[\"think\",\"düşünmek\",\"Think before you speak.\"],[\"take\",\"almak / götürmek\",\"Take what you need.\"],[\"see\",\"görmek\",\"I can see clearly.\"],[\"come\",\"gelmek\",\"Come here please.\"],[\"want\",\"istemek\",\"What do you want?\"],[\"look\",\"bakmak\",\"Look at this.\"],[\"use\",\"kullanmak\",\"How do you use this?\"],[\"find\",\"bulmak\",\"I cannot find my keys.\"],[\"give\",\"vermek\",\"Give me a chance.\"],[\"tell\",\"anlatmak / söylemek\",\"Tell me the truth.\"],[\"work\",\"çalışmak\",\"He works every day.\"],[\"call\",\"aramak / çağırmak\",\"Call me tonight.\"],[\"try\",\"denemek\",\"Always try your best.\"],[\"ask\",\"sormak\",\"Can I ask you something?\"],[\"need\",\"ihtiyaç duymak\",\"I need your help.\"],[\"feel\",\"hissetmek\",\"How do you feel?\"],[\"become\",\"olmak / dönüşmek\",\"She became a doctor.\"],[\"leave\",\"ayrılmak / bırakmak\",\"Do not leave yet.\"],[\"put\",\"koymak\",\"Put it on the table.\"],[\"mean\",\"demek istemek / anlamına gelmek\",\"What does this mean?\"],[\"keep\",\"tutmak / saklamak\",\"Keep this secret.\"],[\"let\",\"izin vermek / bırakmak\",\"Let me help you.\"],[\"begin\",\"başlamak\",\"Let us begin.\"],[\"show\",\"göstermek\",\"Show me how.\"],[\"hear\",\"duymak\",\"Did you hear that?\"],[\"play\",\"oynamak\",\"Let us play.\"],[\"run\",\"koşmak\",\"Run as fast as you can.\"],[\"move\",\"hareket etmek\",\"Move out of the way.\"],[\"live\",\"yaşamak\",\"Where do you live?\"],[\"believe\",\"inanmak\",\"I believe in you.\"],[\"hold\",\"tutmak / beklemek\",\"Hold on tight.\"],[\"bring\",\"getirmek\",\"Bring me some water.\"],[\"happen\",\"olmak / gerçekleşmek\",\"What will happen next?\"],[\"write\",\"yazmak\",\"Write it down.\"],[\"provide\",\"sağlamak\",\"Can you provide proof?\"],[\"sit\",\"oturmak\",\"Please sit down.\"],[\"stand\",\"ayakta durmak\",\"Stand up straight.\"],[\"lose\",\"kaybetmek\",\"I hate to lose.\"],[\"pay\",\"ödemek\",\"I will pay the bill.\"],[\"meet\",\"tanışmak / buluşmak\",\"Nice to meet you.\"],[\"include\",\"dahil etmek\",\"Does it include tax?\"],[\"continue\",\"devam etmek\",\"Continue what you started.\"],[\"set\",\"ayarlamak / koymak\",\"Set the alarm.\"],[\"learn\",\"öğrenmek\",\"Never stop learning.\"],[\"change\",\"değişmek / değiştirmek\",\"Change is necessary.\"],[\"lead\",\"yönetmek / öncülük etmek\",\"She will lead the team.\"],[\"understand\",\"anlamak\",\"Do you understand?\"],[\"watch\",\"izlemek / saat\",\"Watch and learn.\"],[\"follow\",\"takip etmek\",\"Follow the instructions.\"],[\"stop\",\"durmak / durdurmak\",\"Stop right there.\"],[\"create\",\"yaratmak / oluşturmak\",\"Create something beautiful.\"],[\"speak\",\"konuşmak\",\"Speak your mind.\"],[\"read\",\"okumak\",\"Read more books.\"],[\"spend\",\"harcamak / geçirmek\",\"Spend your time wisely.\"],[\"grow\",\"büyümek / gelişmek\",\"Watch it grow.\"],[\"open\",\"açmak\",\"Open the door.\"],[\"walk\",\"yürümek\",\"Let us walk together.\"],[\"win\",\"kazanmak\",\"I want to win.\"],[\"offer\",\"teklif etmek / sunmak\",\"Can I offer you something?\"],[\"remember\",\"hatırlamak\",\"Remember this moment.\"],[\"love\",\"sevmek / aşk\",\"I love this song.\"],[\"consider\",\"düşünmek / değerlendirmek\",\"Consider the options.\"],[\"appear\",\"görünmek / ortaya çıkmak\",\"She appeared from nowhere.\"],[\"buy\",\"satın almak\",\"I want to buy this.\"],[\"wait\",\"beklemek\",\"Wait for me.\"],[\"serve\",\"hizmet etmek\",\"It is my duty to serve.\"],[\"die\",\"ölmek\",\"All things must die.\"],[\"send\",\"göndermek\",\"Send me the file.\"],[\"expect\",\"beklemek / ummak\",\"What do you expect?\"],[\"build\",\"inşa etmek / kurmak\",\"Build your dreams.\"],[\"stay\",\"kalmak\",\"Stay a little longer.\"],[\"fall\",\"düşmek / sonbahar\",\"Do not fall.\"],[\"cut\",\"kesmek\",\"Cut the rope.\"],[\"reach\",\"ulaşmak\",\"Reach for the stars.\"],[\"kill\",\"öldürmek\",\"The hero killed the dragon.\"],[\"raise\",\"yükseltmek / yetiştirmek\",\"Raise your hand.\"],[\"pass\",\"geçmek / pas vermek\",\"Pass the ball.\"],[\"sell\",\"satmak\",\"She wants to sell the house.\"],[\"decide\",\"karar vermek\",\"You must decide now.\"],[\"return\",\"dönmek / iade etmek\",\"Return what you borrowed.\"],[\"explain\",\"açıklamak\",\"Please explain this.\"],[\"hope\",\"ummak / umut\",\"I hope you are well.\"],[\"develop\",\"geliştirmek\",\"Develop your skills.\"],[\"carry\",\"taşımak\",\"Can you carry this?\"],[\"break\",\"kırmak / mola\",\"Do not break it.\"],[\"receive\",\"almak / kabul etmek\",\"Did you receive my email?\"],[\"agree\",\"katılmak / razı olmak\",\"I totally agree.\"],[\"support\",\"desteklemek\",\"Support each other.\"],[\"hit\",\"vurmak / isabet\",\"Hit the target.\"],[\"produce\",\"üretmek\",\"They produce quality goods.\"],[\"eat\",\"yemek\",\"Eat your vegetables.\"],[\"cover\",\"örtmek / kapsamak\",\"Cover your mouth.\"],[\"catch\",\"yakalamak\",\"Catch the ball.\"],[\"draw\",\"çizmek / beraberlik\",\"Draw a picture.\"],[\"choose\",\"seçmek\",\"Choose wisely.\"],[\"cause\",\"sebep olmak / neden\",\"What caused this?\"],[\"require\",\"gerektirmek\",\"This requires patience.\"],[\"report\",\"rapor / bildirmek\",\"Report to the office.\"],[\"pull\",\"çekmek\",\"Pull the rope.\"],[\"raise\",\"kaldırmak\",\"Raise the flag.\"],[\"prepare\",\"hazırlamak\",\"Prepare for the exam.\"],[\"teach\",\"öğretmek\",\"She loves to teach.\"],[\"admit\",\"kabul etmek / itiraf etmek\",\"Admit your mistakes.\"],[\"protect\",\"korumak\",\"Protect those you love.\"],[\"manage\",\"yönetmek / başarmak\",\"Can you manage this?\"],[\"argue\",\"tartışmak\",\"Do not argue with me.\"],[\"share\",\"paylaşmak\",\"Share your thoughts.\"],[\"save\",\"kurtarmak / kaydetmek\",\"Save the file now.\"],[\"help\",\"yardım etmek\",\"Can you help me?\"],[\"start\",\"başlamak\",\"Start the engine.\"],[\"allow\",\"izin vermek\",\"Allow me to explain.\"],[\"add\",\"eklemek\",\"Add more sugar.\"],[\"spend\",\"harcamak\",\"Spend it wisely.\"],[\"grow\",\"büyüt\",\"Grow your business.\"],[\"listen\",\"dinlemek\",\"Listen carefully.\"],[\"bring\",\"getir\",\"Bring your friends.\"],[\"talk\",\"konuşmak\",\"We need to talk.\"],[\"turn\",\"dönmek / döndürmek\",\"Turn left here.\"],[\"ask\",\"sor\",\"Do not be afraid to ask.\"],[\"good\",\"iyi\",\"She is a good person.\"],[\"new\",\"yeni\",\"I have a new phone.\"],[\"first\",\"ilk / birinci\",\"This is my first time.\"],[\"last\",\"son / geçen\",\"This is the last chance.\"],[\"long\",\"uzun\",\"It was a long day.\"],[\"great\",\"harika / büyük\",\"You did a great job.\"],[\"little\",\"küçük / az\",\"Just a little more.\"],[\"own\",\"kendi / sahip olmak\",\"She has her own style.\"],[\"other\",\"diğer / başka\",\"Try the other one.\"],[\"old\",\"yaşlı / eski\",\"He is very old.\"],[\"right\",\"doğru / haklı\",\"You are right.\"],[\"big\",\"büyük\",\"That is a big deal.\"],[\"high\",\"yüksek\",\"Aim high.\"],[\"different\",\"farklı\",\"We are all different.\"],[\"small\",\"küçük\",\"Small steps matter.\"],[\"large\",\"büyük / geniş\",\"It was a large crowd.\"],[\"next\",\"sonraki\",\"Next stop is Main Street.\"],[\"early\",\"erken\",\"Wake up early.\"],[\"young\",\"genç\",\"She is young but wise.\"],[\"important\",\"önemli\",\"This is very important.\"],[\"public\",\"halka açık / kamu\",\"It is a public place.\"],[\"private\",\"özel / gizli\",\"That is private information.\"],[\"real\",\"gerçek\",\"Is this real?\"],[\"best\",\"en iyi\",\"Do your best.\"],[\"free\",\"özgür / ücretsiz\",\"Freedom is not free.\"],[\"strong\",\"güçlü\",\"Be strong.\"],[\"hard\",\"zor / sert\",\"Work hard.\"],[\"sure\",\"emin\",\"Are you sure?\"],[\"clear\",\"açık / net\",\"Make it clear.\"],[\"possible\",\"mümkün\",\"Anything is possible.\"],[\"true\",\"doğru / gerçek\",\"Is that true?\"],[\"whole\",\"bütün / tüm\",\"The whole team tried.\"],[\"ready\",\"hazır\",\"Are you ready?\"],[\"happy\",\"mutlu\",\"Be happy.\"],[\"bad\",\"kötü\",\"That was bad.\"],[\"beautiful\",\"güzel\",\"What a beautiful day.\"],[\"wrong\",\"yanlış\",\"That is wrong.\"],[\"simple\",\"basit / sade\",\"Keep it simple.\"],[\"open\",\"açık\",\"The door is open.\"],[\"safe\",\"güvenli\",\"You are safe here.\"],[\"fast\",\"hızlı\",\"She runs fast.\"],[\"slow\",\"yavaş\",\"Take it slow.\"],[\"dark\",\"karanlık\",\"It is dark outside.\"],[\"light\",\"hafif / açık / ışık\",\"Turn on the light.\"],[\"full\",\"dolu\",\"The glass is full.\"],[\"empty\",\"boş\",\"The room was empty.\"],[\"rich\",\"zengin\",\"He became very rich.\"],[\"poor\",\"fakir / zayıf\",\"Help the poor.\"],[\"dead\",\"ölü / ölmüş\",\"The battery is dead.\"],[\"alive\",\"canlı / hayatta\",\"She is still alive.\"],[\"hot\",\"sıcak\",\"It is too hot today.\"],[\"cold\",\"soğuk\",\"The water is cold.\"],[\"late\",\"geç\",\"Do not be late.\"],[\"deep\",\"derin\",\"The ocean is deep.\"],[\"wide\",\"geniş\",\"Open wide.\"],[\"tall\",\"uzun boylu / yüksek\",\"He is very tall.\"],[\"short\",\"kısa / alçak\",\"Life is short.\"],[\"heavy\",\"ağır\",\"This bag is heavy.\"],[\"soft\",\"yumuşak\",\"Her voice was soft.\"],[\"smart\",\"zeki / akıllı\",\"You are so smart.\"],[\"crazy\",\"deli / çılgın\",\"That is crazy!\"],[\"strange\",\"garip / tuhaf\",\"Something strange happened.\"],[\"special\",\"özel\",\"You are special.\"],[\"serious\",\"ciddi\",\"Be serious for once.\"],[\"funny\",\"komik / eğlenceli\",\"That was so funny.\"],[\"quiet\",\"sessiz / sakin\",\"Please be quiet.\"],[\"loud\",\"gürültülü / yüksek sesli\",\"The music is too loud.\"],[\"the\",\"(belirli artikel)\",\"The cat sat on the mat.\"],[\"a\",\"(belirsiz artikel)\",\"I saw a dog.\"],[\"and\",\"ve\",\"He and she are friends.\"],[\"or\",\"ya da / veya\",\"Tea or coffee?\"],[\"but\",\"ama / fakat\",\"I tried but failed.\"],[\"if\",\"eğer\",\"If you need help, ask.\"],[\"so\",\"bu yüzden / öyle\",\"It was late so I left.\"],[\"because\",\"çünkü\",\"I am happy because of you.\"],[\"when\",\"ne zaman / -dığında\",\"Call me when you arrive.\"],[\"where\",\"nerede / -dığı yerde\",\"I know where you live.\"],[\"how\",\"nasıl\",\"How are you?\"],[\"what\",\"ne / neler\",\"What is your name?\"],[\"who\",\"kim\",\"Who are you?\"],[\"which\",\"hangi\",\"Which one do you prefer?\"],[\"why\",\"neden / niye\",\"Why did you do that?\"],[\"that\",\"o / şu / ki\",\"I know that you are right.\"],[\"this\",\"bu\",\"This is amazing.\"],[\"these\",\"bunlar\",\"These are mine.\"],[\"those\",\"şunlar / onlar\",\"Those are yours.\"],[\"here\",\"burada / buraya\",\"Come here.\"],[\"there\",\"orada / oraya\",\"Go there.\"],[\"now\",\"şimdi\",\"Do it now.\"],[\"then\",\"sonra / o zaman\",\"Think first, then act.\"],[\"very\",\"çok\",\"I am very tired.\"],[\"just\",\"sadece / tam\",\"Just do it.\"],[\"also\",\"ayrıca / da\",\"I also agree.\"],[\"too\",\"de / da / aşırı\",\"Me too.\"],[\"only\",\"sadece / yalnızca\",\"Only you can do this.\"],[\"even\",\"bile / hatta\",\"Even I was surprised.\"],[\"still\",\"hâlâ / yine de\",\"Are you still here?\"],[\"already\",\"zaten / bile\",\"I already know.\"],[\"always\",\"her zaman\",\"Always be kind.\"],[\"never\",\"hiçbir zaman\",\"Never give up.\"],[\"often\",\"sık sık / çoğunlukla\",\"I often go there.\"],[\"sometimes\",\"bazen\",\"Sometimes I forget.\"],[\"again\",\"tekrar / yeniden\",\"Try again.\"],[\"together\",\"birlikte\",\"We are better together.\"],[\"really\",\"gerçekten\",\"Are you really sure?\"],[\"maybe\",\"belki\",\"Maybe tomorrow.\"],[\"almost\",\"neredeyse\",\"Almost there.\"],[\"enough\",\"yeterli / yeter\",\"That is enough.\"],[\"much\",\"çok (miktar)\",\"How much does it cost?\"],[\"more\",\"daha fazla\",\"I want more.\"],[\"most\",\"en fazla / çoğu\",\"Most people agree.\"],[\"less\",\"daha az\",\"Use less sugar.\"],[\"both\",\"her ikisi de\",\"Both are correct.\"],[\"few\",\"az / birkaç\",\"A few more minutes.\"],[\"many\",\"çok (sayı)\",\"There are many options.\"],[\"any\",\"herhangi bir\",\"Do you have any questions?\"],[\"all\",\"hepsi / tüm\",\"All is well.\"],[\"some\",\"bazı / biraz\",\"Some people never learn.\"],[\"each\",\"her biri\",\"Each day is a gift.\"],[\"every\",\"her\",\"Every second counts.\"],[\"no\",\"hayır / hiç\",\"No pain no gain.\"],[\"not\",\"değil\",\"I am not afraid.\"],[\"yes\",\"evet\",\"Yes, I understand.\"],[\"please\",\"lütfen\",\"Please be careful.\"],[\"thank\",\"teşekkür etmek\",\"Thank you so much.\"],[\"sorry\",\"özür dilemek / üzgün\",\"I am so sorry.\"],[\"hello\",\"merhaba\",\"Hello, how are you?\"],[\"goodbye\",\"güle güle / hoşça kal\",\"Goodbye and good luck.\"],[\"okay\",\"tamam / peki\",\"Okay, let us do this.\"],[\"well\",\"iyi / peki / aslında\",\"Well, that is interesting.\"],[\"about\",\"hakkında / yaklaşık\",\"Tell me about yourself.\"],[\"after\",\"sonra / -dan sonra\",\"Call me after lunch.\"],[\"before\",\"önce / -dan önce\",\"Think before you speak.\"],[\"between\",\"arasında\",\"Choose between the two.\"],[\"during\",\"sırasında / esnasında\",\"Stay calm during the storm.\"],[\"without\",\"olmadan / -sız\",\"I cannot live without music.\"],[\"through\",\"içinden / aracılığıyla\",\"Walk through the door.\"],[\"against\",\"karşı / -e karşı\",\"She fought against injustice.\"],[\"with\",\"ile / beraber\",\"Come with me.\"],[\"from\",\"dan / den\",\"Where are you from?\"],[\"into\",\"içine\",\"Jump into the pool.\"],[\"over\",\"üzerinde / bitti\",\"The game is over.\"],[\"under\",\"altında\",\"The cat is under the table.\"],[\"again\",\"yeniden\",\"Start again.\"],[\"around\",\"etrafında / yaklaşık\",\"Look around you.\"],[\"until\",\"kadar / -e kadar\",\"Wait until I arrive.\"],[\"since\",\"beri / -den beri\",\"I have been here since morning.\"],[\"while\",\"iken / -irken\",\"Call me while you wait.\"],[\"though\",\"rağmen / -e karşın\",\"Though tired, she kept going.\"],[\"however\",\"ancak / bununla birlikte\",\"I tried, however I failed.\"],[\"therefore\",\"bu nedenle / dolayısıyla\",\"Therefore, we must act now.\"],[\"although\",\"her ne kadar / -e rağmen\",\"Although it rained, we played.\"],[\"unless\",\"-medikçe / eğer ... değilse\",\"Unless you try, you will never know.\"],[\"once\",\"bir kez / bir zamanlar\",\"Once upon a time.\"],[\"whether\",\"olup olmadığını / -ip -mediğini\",\"I wonder whether she knows.\"],[\"either\",\"ya ... ya da / ikisi de\",\"Either way is fine.\"],[\"neither\",\"ne ... ne de\",\"Neither of them came.\"],[\"instead\",\"bunun yerine\",\"Try this instead.\"],[\"else\",\"başka / yoksa\",\"What else can I do?\"],[\"above\",\"yukarıda / üstünde\",\"Look above the clouds.\"],[\"below\",\"aşağıda / altında\",\"The answer is below.\"],[\"behind\",\"arkasında\",\"She stood behind him.\"],[\"beside\",\"yanında / -in yanı sıra\",\"Sit beside me.\"],[\"toward\",\"doğru / -e doğru\",\"Walk toward the light.\"],[\"within\",\"içinde / -in içinde\",\"Finish within an hour.\"],[\"beyond\",\"ötesinde / -in ötesinde\",\"Beyond the mountains.\"],[\"along\",\"boyunca / birlikte\",\"Walk along the river.\"],[\"upon\",\"üzerine / -in üzerinde\",\"Once upon a time.\"],[\"across\",\"karşısında / bir yandan öbür yana\",\"Walk across the bridge.\"]]}");
+var UNITS  = JSON.parse("[{\"id\":\"bb1\",\"label\":\"Basketball Basics\",\"icon\":\"&#127936;\",\"tag\":\"basketball\",\"w\":[[\"basketball\",\"basketbol\",\"The basketball bounced off the rim.\"],[\"court\",\"kort / saha\",\"The court was freshly painted.\"],[\"hoop\",\"çember / pota\",\"He dunked through the hoop.\"],[\"backboard\",\"pota tahtası\",\"The ball hit the backboard.\"],[\"dribble\",\"dribling yapmak\",\"She can dribble with both hands.\"],[\"pass\",\"pas vermek\",\"Make a pass to the open player.\"],[\"shoot\",\"şut atmak\",\"Shoot before the buzzer!\"],[\"rebound\",\"ribaund / top kapma\",\"He grabbed the rebound.\"],[\"block\",\"blok / blo yapmak\",\"She got a huge block.\"],[\"steal\",\"top çalmak\",\"He made a steal and scored.\"],[\"dunk\",\"smariç / potaya basmak\",\"That dunk was incredible!\"],[\"layup\",\"lay-up\",\"She scored with a layup.\"],[\"free throw\",\"serbest atış\",\"He missed the free throw.\"],[\"three-pointer\",\"üç sayılık atış\",\"That three-pointer won the game.\"]]},{\"id\":\"bb2\",\"label\":\"Basketball Advanced\",\"icon\":\"&#127936;\",\"tag\":\"basketball\",\"w\":[[\"foul\",\"faul\",\"The referee called a foul.\"],[\"timeout\",\"mola / timeout\",\"The coach called a timeout.\"],[\"quarter\",\"çeyrek / periyot\",\"We are in the fourth quarter.\"],[\"overtime\",\"uzatma\",\"The game went into overtime.\"],[\"point guard\",\"organizatör oyuncu\",\"The point guard leads the offense.\"],[\"center\",\"pivot oyuncu\",\"The center dominated the paint.\"],[\"forward\",\"forvet\",\"The forward scored twenty points.\"],[\"coach\",\"antrenör\",\"The coach gave great advice.\"],[\"referee\",\"hakem\",\"The referee made a bad call.\"],[\"offense\",\"hücum\",\"Their offense is unstoppable.\"],[\"defense\",\"savunma\",\"Play better defense!\"],[\"assist\",\"asist\",\"She had ten assists tonight.\"],[\"turnover\",\"top kaybı\",\"Too many turnovers cost the game.\"],[\"fast break\",\"hızlı hücum\",\"They scored on a fast break.\"],[\"slam dunk\",\"smariç\",\"That slam dunk broke the internet.\"],[\"buzzer beater\",\"son saniye sayısı\",\"He hit a buzzer beater to win.\"],[\"championship\",\"şampiyonluk\",\"They won the championship.\"],[\"playoffs\",\"playoff / eleme\",\"The playoffs start next week.\"],[\"MVP\",\"En Değerli Oyuncu\",\"She was named MVP.\"],[\"bench\",\"yedek kulübesi\",\"He came off the bench to score.\"],[\"screen\",\"blok kurmak\",\"Set a screen for the shooter.\"],[\"zone defense\",\"bölge savunması\",\"They played a zone defense.\"],[\"man-to-man\",\"adam adama savunma\",\"Switch to man-to-man defense.\"],[\"jump shot\",\"sıçrama şutu\",\"Her jump shot is perfect.\"],[\"alley-oop\",\"alley-oop\",\"They completed an alley-oop.\"],[\"pick and roll\",\"pick and roll\",\"Run the pick and roll play.\"]]},{\"id\":\"po1\",\"label\":\"Crime and Suspects\",\"icon\":\"&#128110;\",\"tag\":\"police\",\"w\":[[\"arrest\",\"tutuklama / tutuklamak\",\"The officer made an arrest.\"],[\"suspect\",\"şüpheli\",\"The suspect fled the scene.\"],[\"evidence\",\"delil / kanıt\",\"The evidence was clear.\"],[\"witness\",\"tanık\",\"The witness saw everything.\"],[\"crime\",\"suç\",\"The crime happened at midnight.\"],[\"criminal\",\"suçlu\",\"The criminal was caught.\"],[\"detective\",\"dedektif\",\"The detective solved the case.\"],[\"investigation\",\"soruşturma\",\"The investigation took months.\"],[\"warrant\",\"arama kararı / izin belgesi\",\"They got a search warrant.\"],[\"handcuffs\",\"kelepçe\",\"The officer put on handcuffs.\"],[\"badge\",\"rozet\",\"Show me your badge.\"],[\"patrol\",\"devriye\",\"The officer was on patrol.\"],[\"headquarters\",\"merkez / karargah\",\"Report to headquarters.\"],[\"interrogation\",\"sorgu / sorgulama\",\"The interrogation lasted hours.\"]]},{\"id\":\"po2\",\"label\":\"Court and Justice\",\"icon\":\"&#9878;\",\"tag\":\"police\",\"w\":[[\"alibi\",\"mazeret / suçsuzluk kanıtı\",\"He had a solid alibi.\"],[\"motive\",\"sebep / güdü\",\"What was the motive?\"],[\"forensics\",\"adli tıp\",\"Forensics found fingerprints.\"],[\"fingerprint\",\"parmak izi\",\"They matched the fingerprint.\"],[\"guilty\",\"suçlu\",\"The jury found him guilty.\"],[\"innocent\",\"masum\",\"She was proven innocent.\"],[\"verdict\",\"karar / hüküm\",\"The verdict shocked everyone.\"],[\"trial\",\"dava / yargılama\",\"The trial lasted two weeks.\"],[\"judge\",\"hakim / yargıç\",\"The judge made a decision.\"],[\"lawyer\",\"avukat\",\"He hired a good lawyer.\"],[\"testimony\",\"ifade / tanıklık\",\"Her testimony was powerful.\"],[\"sentence\",\"ceza / hüküm\",\"He received a ten-year sentence.\"],[\"prison\",\"hapishane\",\"She was sent to prison.\"],[\"parole\",\"şartlı tahliye\",\"He was released on parole.\"]]},{\"id\":\"po3\",\"label\":\"Operations\",\"icon\":\"&#128373;\",\"tag\":\"police\",\"w\":[[\"robbery\",\"soygun\",\"The robbery was caught on camera.\"],[\"murder\",\"cinayet\",\"The murder shocked the city.\"],[\"fraud\",\"dolandırıcılık\",\"He was charged with fraud.\"],[\"smuggling\",\"kaçakçılık\",\"They were caught smuggling.\"],[\"ransom\",\"fidye\",\"They demanded a ransom.\"],[\"hostage\",\"rehine\",\"The hostage was released safely.\"],[\"undercover\",\"gizli / sivil\",\"She was working undercover.\"],[\"surveillance\",\"gözetim / takip\",\"They set up surveillance cameras.\"],[\"forensic\",\"adli / forensik\",\"The forensic team arrived.\"],[\"officer\",\"memur / polis memuru\",\"The officer helped the child.\"],[\"sergeant\",\"çavuş / komiser yardımcısı\",\"Sergeant Smith gave orders.\"],[\"captain\",\"kaptan / başkomiser\",\"The captain led the unit.\"]]},{\"id\":\"go1\",\"label\":\"GOT: Power and War\",\"icon\":\"&#9876;\",\"tag\":\"got\",\"w\":[[\"throne\",\"taht\",\"He sat on the Iron Throne.\"],[\"king\",\"kral\",\"The king ruled the Seven Kingdoms.\"],[\"queen\",\"kraliçe\",\"The queen commanded her army.\"],[\"dragon\",\"ejderha\",\"The dragon burned the city.\"],[\"sword\",\"kılıç\",\"He drew his sword.\"],[\"knight\",\"şövalye\",\"The knight protected the king.\"],[\"castle\",\"kale\",\"They attacked the castle.\"],[\"war\",\"savaş\",\"War is coming to Westeros.\"],[\"betrayal\",\"ihanet\",\"The betrayal shocked everyone.\"],[\"honor\",\"şeref / onur\",\"He died with honor.\"],[\"prophecy\",\"kehanet / kehanet\",\"The prophecy came true.\"],[\"exile\",\"sürgün\",\"She lived in exile for years.\"],[\"alliance\",\"ittifak\",\"They formed an alliance.\"],[\"ambush\",\"pusu\",\"The army fell into an ambush.\"]]},{\"id\":\"go2\",\"label\":\"GOT: Betrayal\",\"icon\":\"&#128081;\",\"tag\":\"got\",\"w\":[[\"siege\",\"kuşatma\",\"The siege lasted for months.\"],[\"raven\",\"kuzgun\",\"A raven brought the message.\"],[\"wildfire\",\"yeşil ateş / yabanates\",\"Wildfire burned the fleet.\"],[\"direwolf\",\"direwolf / dişi kurt\",\"The direwolf protected the children.\"],[\"bastard\",\"piç / gayrimeşru çocuk\",\"He was called a bastard.\"],[\"oath\",\"yemin / ant\",\"He swore an oath.\"],[\"lord\",\"lord / bey\",\"The lord called his banners.\"],[\"lady\",\"hanım / bayan\",\"The lady refused the offer.\"],[\"realm\",\"krallık / diyar\",\"He wanted to rule the realm.\"],[\"council\",\"meclis / konsey\",\"The small council met in secret.\"],[\"assassin\",\"suikastçı\",\"The assassin struck at night.\"],[\"dungeon\",\"zindan / kafes\",\"He was locked in the dungeon.\"],[\"feast\",\"şölen / ziyafet\",\"They held a great feast.\"],[\"maester\",\"meyster (bilge)\",\"The maester healed the wound.\"]]},{\"id\":\"go3\",\"label\":\"GOT: World\",\"icon\":\"&#127992;\",\"tag\":\"got\",\"w\":[[\"banner\",\"sancak / bayrak\",\"Raise the banner of House Stark.\"],[\"kingdom\",\"krallık\",\"Seven kingdoms united under one rule.\"],[\"heir\",\"varis / mirasçı\",\"She is the rightful heir.\"],[\"ransom\",\"fidye\",\"They paid the ransom.\"],[\"poison\",\"zehir\",\"She used poison to kill him.\"],[\"crow\",\"karga / Gecenin Muhafızı\",\"He joined the Night's Watch.\"],[\"wall\",\"duvar / Sur\",\"The Wall protects the realm.\"],[\"wildling\",\"vahşi / yaban insan\",\"The wildlings crossed the Wall.\"],[\"white walker\",\"Beyaz Gezgin\",\"The White Walkers are coming.\"],[\"conquest\",\"fetih / ele geçirme\",\"The conquest changed everything.\"],[\"tournament\",\"turnuva\",\"The tournament drew many knights.\"],[\"marriage\",\"evlilik\",\"The marriage was political.\"]]},{\"id\":\"lo1\",\"label\":\"LOTR: The Quest\",\"icon\":\"&#128141;\",\"tag\":\"lotr\",\"w\":[[\"ring\",\"yüzük\",\"One ring to rule them all.\"],[\"wizard\",\"büyücü\",\"The wizard arrived at dawn.\"],[\"elf\",\"elf\",\"The elf had pointed ears.\"],[\"dwarf\",\"cüce\",\"The dwarf wielded an axe.\"],[\"hobbit\",\"hobbit\",\"The hobbit left the Shire.\"],[\"fellowship\",\"yoldaşlık / topluluk\",\"The fellowship set out together.\"],[\"quest\",\"görev / macera\",\"They began their quest.\"],[\"darkness\",\"karanlık\",\"Darkness covered the land.\"],[\"courage\",\"cesaret\",\"She showed great courage.\"],[\"evil\",\"kötülük\",\"Evil was defeated at last.\"],[\"power\",\"güç\",\"The ring had great power.\"],[\"shadow\",\"gölge\",\"A shadow fell over Middle-earth.\"],[\"ancient\",\"kadim / eski\",\"The ancient ruins still stood.\"],[\"destiny\",\"kader\",\"He could not escape his destiny.\"]]},{\"id\":\"lo2\",\"label\":\"LOTR: Darkness\",\"icon\":\"&#128308;\",\"tag\":\"lotr\",\"w\":[[\"journey\",\"yolculuk\",\"The journey was long and hard.\"],[\"enemy\",\"düşman\",\"The enemy gathered its forces.\"],[\"forest\",\"orman\",\"They passed through the dark forest.\"],[\"mountain\",\"dağ\",\"The mountain was covered in snow.\"],[\"burden\",\"yük\",\"The ring was a great burden.\"],[\"hope\",\"umut\",\"There was still hope.\"],[\"greed\",\"açgözlülük\",\"Greed corrupted the dwarves.\"],[\"army\",\"ordu\",\"The army marched at dawn.\"],[\"shield\",\"kalkan\",\"He raised his shield.\"],[\"arrow\",\"ok\",\"The elf fired an arrow.\"],[\"axe\",\"balta\",\"The dwarf threw his axe.\"],[\"staff\",\"asa\",\"The wizard raised his staff.\"],[\"map\",\"harita\",\"They followed the ancient map.\"],[\"gate\",\"kapı / geçit\",\"The Black Gate was sealed.\"]]},{\"id\":\"lo3\",\"label\":\"LOTR: Heroes\",\"icon\":\"&#9889;\",\"tag\":\"lotr\",\"w\":[[\"fire\",\"ateş\",\"The dragon breathed fire.\"],[\"doom\",\"yıkım / kıyamet\",\"Mount Doom was their destination.\"],[\"fellowship\",\"yoldaşlık\",\"The Fellowship of the Ring formed.\"],[\"immortal\",\"ölümsüz\",\"The elves are immortal.\"],[\"mortal\",\"ölümlü\",\"Men are mortal.\"],[\"ancient\",\"kadim\",\"The ancient languages were forgotten.\"],[\"creature\",\"yaratık\",\"Strange creatures lived there.\"],[\"oath\",\"yemin\",\"He broke his oath.\"],[\"betrayal\",\"ihanet\",\"Betrayal weakened the fellowship.\"],[\"sacrifice\",\"fedakarlık\",\"Her sacrifice saved them all.\"],[\"wisdom\",\"bilgelik\",\"The wizard spoke with wisdom.\"],[\"corruption\",\"yozlaşma / bozulma\",\"The ring caused corruption.\"]]},{\"id\":\"re1\",\"label\":\"Faith and Prayer\",\"icon\":\"&#128591;\",\"tag\":\"religion\",\"w\":[[\"god\",\"tanrı / Allah\",\"People pray to god.\"],[\"faith\",\"inanç / iman\",\"She had strong faith.\"],[\"prayer\",\"dua\",\"He said a prayer.\"],[\"temple\",\"tapınak\",\"They built a temple.\"],[\"church\",\"kilise\",\"The church bell rang.\"],[\"mosque\",\"cami\",\"The mosque was beautiful.\"],[\"synagogue\",\"sinagog\",\"They visited the synagogue.\"],[\"prophet\",\"peygamber\",\"The prophet delivered a message.\"],[\"scripture\",\"kutsal yazı / kitap\",\"The scripture was read aloud.\"],[\"bible\",\"İncil\",\"She read the Bible.\"],[\"quran\",\"Kuran\",\"He memorized the Quran.\"],[\"torah\",\"Tevrat\",\"The Torah is sacred.\"],[\"angel\",\"melek\",\"An angel appeared in the dream.\"],[\"devil\",\"şeytan\",\"The devil tempted him.\"]]},{\"id\":\"re2\",\"label\":\"Sacred and Holy\",\"icon\":\"&#9728;\",\"tag\":\"religion\",\"w\":[[\"heaven\",\"cennet\",\"She believed in heaven.\"],[\"hell\",\"cehennem\",\"He feared hell.\"],[\"soul\",\"ruh\",\"The soul lives forever.\"],[\"sin\",\"günah\",\"He confessed his sins.\"],[\"blessing\",\"bereket / dua\",\"She gave her blessing.\"],[\"holy\",\"kutsal\",\"This is a holy place.\"],[\"sacred\",\"kutsal / dokunulmaz\",\"The sacred text was protected.\"],[\"ritual\",\"ritüel / ayin\",\"The ritual was performed at sunrise.\"],[\"worship\",\"ibadet etmek\",\"They gathered to worship.\"],[\"pilgrimage\",\"hac / kutsal yolculuk\",\"She went on a pilgrimage.\"],[\"monk\",\"rahip / keşiş\",\"The monk lived simply.\"],[\"nun\",\"rahibe\",\"The nun helped the poor.\"],[\"priest\",\"papaz\",\"The priest led the service.\"],[\"imam\",\"imam\",\"The imam led the prayer.\"]]},{\"id\":\"re3\",\"label\":\"World Religions\",\"icon\":\"&#127759;\",\"tag\":\"religion\",\"w\":[[\"rabbi\",\"haham\",\"The rabbi taught the children.\"],[\"miracle\",\"mucize\",\"The miracle amazed everyone.\"],[\"resurrection\",\"diriliş / yeniden doğuş\",\"The resurrection is central to faith.\"],[\"creation\",\"yaratılış\",\"The creation story is ancient.\"],[\"afterlife\",\"ahiret / öteki dünya\",\"He believed in the afterlife.\"],[\"salvation\",\"kurtuluş\",\"She sought salvation.\"],[\"meditation\",\"meditasyon\",\"Meditation brings inner peace.\"],[\"karma\",\"karma\",\"Good deeds bring good karma.\"],[\"reincarnation\",\"reenkarnasyon / yeniden doğuş\",\"He believed in reincarnation.\"],[\"enlightenment\",\"aydınlanma / nirvana\",\"The monk reached enlightenment.\"],[\"atheist\",\"ateist\",\"He is an atheist.\"],[\"agnostic\",\"agnostik\",\"She identifies as agnostic.\"]]},{\"id\":\"c1\",\"label\":\"Top Words: Nouns I\",\"icon\":\"&#128214;\",\"tag\":\"common\",\"w\":[[\"time\",\"zaman\",\"There is no time to waste.\"],[\"year\",\"yıl\",\"This year was amazing.\"],[\"people\",\"insanlar\",\"People gathered in the square.\"],[\"way\",\"yol / yön\",\"Which way should we go?\"],[\"day\",\"gün\",\"It was a beautiful day.\"],[\"man\",\"adam / erkek\",\"The man walked away.\"],[\"woman\",\"kadın\",\"The woman smiled.\"],[\"child\",\"çocuk\",\"The child laughed.\"],[\"world\",\"dünya\",\"The world is changing fast.\"],[\"life\",\"hayat\",\"Life is full of surprises.\"],[\"hand\",\"el\",\"He raised his hand.\"],[\"part\",\"parça / bölüm\",\"This is the best part.\"],[\"place\",\"yer / mekan\",\"This is a great place.\"],[\"case\",\"durum / dava\",\"In that case, I agree.\"],[\"week\",\"hafta\",\"See you next week.\"],[\"company\",\"şirket / topluluk\",\"She started a company.\"]]},{\"id\":\"c2\",\"label\":\"Top Words: Nouns II\",\"icon\":\"&#128214;\",\"tag\":\"common\",\"w\":[[\"system\",\"sistem\",\"The system needs an update.\"],[\"program\",\"program\",\"The program runs smoothly.\"],[\"question\",\"soru\",\"That is a great question.\"],[\"government\",\"hükümet\",\"The government passed a new law.\"],[\"number\",\"sayı / numara\",\"What is your number?\"],[\"night\",\"gece\",\"It was a dark night.\"],[\"point\",\"nokta / puan\",\"That is a good point.\"],[\"home\",\"ev / yuva\",\"She went home early.\"],[\"water\",\"su\",\"Drink more water.\"],[\"room\",\"oda\",\"The room was empty.\"],[\"mother\",\"anne\",\"His mother called him.\"],[\"area\",\"alan / bölge\",\"This area is dangerous.\"],[\"money\",\"para\",\"Money is not everything.\"],[\"story\",\"hikaye\",\"Tell me the story.\"],[\"fact\",\"gerçek / olgu\",\"That is a fact.\"],[\"month\",\"ay\",\"She leaves next month.\"]]},{\"id\":\"c3\",\"label\":\"Top Words: Nouns III\",\"icon\":\"&#128214;\",\"tag\":\"common\",\"w\":[[\"lot\",\"çok / lot\",\"There is a lot to do.\"],[\"right\",\"sağ / doğru / hak\",\"You have the right to speak.\"],[\"study\",\"çalışmak / çalışma\",\"She likes to study.\"],[\"book\",\"kitap\",\"I read that book.\"],[\"eye\",\"göz\",\"She has blue eyes.\"],[\"job\",\"iş / meslek\",\"He got a new job.\"],[\"word\",\"kelime / söz\",\"Choose your words carefully.\"],[\"business\",\"iş / ticaret\",\"Business is going well.\"],[\"issue\",\"mesele / sorun\",\"That is a big issue.\"],[\"side\",\"taraf / yan\",\"Stand by my side.\"],[\"kind\",\"tür / nazik\",\"What kind is it?\"],[\"head\",\"baş / kafa\",\"Use your head.\"],[\"house\",\"ev / konut\",\"They bought a house.\"],[\"service\",\"hizmet\",\"The service was excellent.\"],[\"friend\",\"arkadaş\",\"She is my best friend.\"],[\"father\",\"baba\",\"His father was a doctor.\"]]},{\"id\":\"c4\",\"label\":\"Top Words: Verbs I\",\"icon\":\"&#128293;\",\"tag\":\"common\",\"w\":[[\"power\",\"güç / iktidar\",\"Knowledge is power.\"],[\"hour\",\"saat\",\"Wait one hour.\"],[\"be\",\"olmak\",\"I want to be happy.\"],[\"have\",\"sahip olmak\",\"I have a dog.\"],[\"do\",\"yapmak\",\"What do you do?\"],[\"say\",\"demek / söylemek\",\"What did she say?\"],[\"go\",\"gitmek\",\"Let us go now.\"],[\"get\",\"almak / olmak\",\"Did you get my message?\"],[\"make\",\"yapmak / üretmek\",\"She can make anything.\"],[\"know\",\"bilmek\",\"I know the answer.\"],[\"think\",\"düşünmek\",\"Think before you speak.\"],[\"take\",\"almak / götürmek\",\"Take what you need.\"],[\"see\",\"görmek\",\"I can see clearly.\"],[\"come\",\"gelmek\",\"Come here please.\"],[\"want\",\"istemek\",\"What do you want?\"],[\"look\",\"bakmak\",\"Look at this.\"]]},{\"id\":\"c5\",\"label\":\"Top Words: Verbs II\",\"icon\":\"&#128293;\",\"tag\":\"common\",\"w\":[[\"use\",\"kullanmak\",\"How do you use this?\"],[\"find\",\"bulmak\",\"I cannot find my keys.\"],[\"give\",\"vermek\",\"Give me a chance.\"],[\"tell\",\"anlatmak / söylemek\",\"Tell me the truth.\"],[\"work\",\"çalışmak\",\"He works every day.\"],[\"call\",\"aramak / çağırmak\",\"Call me tonight.\"],[\"try\",\"denemek\",\"Always try your best.\"],[\"ask\",\"sormak\",\"Can I ask you something?\"],[\"need\",\"ihtiyaç duymak\",\"I need your help.\"],[\"feel\",\"hissetmek\",\"How do you feel?\"],[\"become\",\"olmak / dönüşmek\",\"She became a doctor.\"],[\"leave\",\"ayrılmak / bırakmak\",\"Do not leave yet.\"],[\"put\",\"koymak\",\"Put it on the table.\"],[\"mean\",\"demek istemek / anlamına gelmek\",\"What does this mean?\"],[\"keep\",\"tutmak / saklamak\",\"Keep this secret.\"],[\"let\",\"izin vermek / bırakmak\",\"Let me help you.\"]]},{\"id\":\"c6\",\"label\":\"Top Words: Verbs III\",\"icon\":\"&#128293;\",\"tag\":\"common\",\"w\":[[\"begin\",\"başlamak\",\"Let us begin.\"],[\"show\",\"göstermek\",\"Show me how.\"],[\"hear\",\"duymak\",\"Did you hear that?\"],[\"play\",\"oynamak\",\"Let us play.\"],[\"run\",\"koşmak\",\"Run as fast as you can.\"],[\"move\",\"hareket etmek\",\"Move out of the way.\"],[\"live\",\"yaşamak\",\"Where do you live?\"],[\"believe\",\"inanmak\",\"I believe in you.\"],[\"hold\",\"tutmak / beklemek\",\"Hold on tight.\"],[\"bring\",\"getirmek\",\"Bring me some water.\"],[\"happen\",\"olmak / gerçekleşmek\",\"What will happen next?\"],[\"write\",\"yazmak\",\"Write it down.\"],[\"provide\",\"sağlamak\",\"Can you provide proof?\"],[\"sit\",\"oturmak\",\"Please sit down.\"],[\"stand\",\"ayakta durmak\",\"Stand up straight.\"],[\"lose\",\"kaybetmek\",\"I hate to lose.\"]]},{\"id\":\"c7\",\"label\":\"Top Words: Verbs IV\",\"icon\":\"&#128293;\",\"tag\":\"common\",\"w\":[[\"pay\",\"ödemek\",\"I will pay the bill.\"],[\"meet\",\"tanışmak / buluşmak\",\"Nice to meet you.\"],[\"include\",\"dahil etmek\",\"Does it include tax?\"],[\"continue\",\"devam etmek\",\"Continue what you started.\"],[\"set\",\"ayarlamak / koymak\",\"Set the alarm.\"],[\"learn\",\"öğrenmek\",\"Never stop learning.\"],[\"change\",\"değişmek / değiştirmek\",\"Change is necessary.\"],[\"lead\",\"yönetmek / öncülük etmek\",\"She will lead the team.\"],[\"understand\",\"anlamak\",\"Do you understand?\"],[\"watch\",\"izlemek / saat\",\"Watch and learn.\"],[\"follow\",\"takip etmek\",\"Follow the instructions.\"],[\"stop\",\"durmak / durdurmak\",\"Stop right there.\"],[\"create\",\"yaratmak / oluşturmak\",\"Create something beautiful.\"],[\"speak\",\"konuşmak\",\"Speak your mind.\"],[\"read\",\"okumak\",\"Read more books.\"],[\"spend\",\"harcamak / geçirmek\",\"Spend your time wisely.\"]]},{\"id\":\"c8\",\"label\":\"Top Words: Verbs V\",\"icon\":\"&#128293;\",\"tag\":\"common\",\"w\":[[\"grow\",\"büyümek / gelişmek\",\"Watch it grow.\"],[\"open\",\"açmak\",\"Open the door.\"],[\"walk\",\"yürümek\",\"Let us walk together.\"],[\"win\",\"kazanmak\",\"I want to win.\"],[\"offer\",\"teklif etmek / sunmak\",\"Can I offer you something?\"],[\"remember\",\"hatırlamak\",\"Remember this moment.\"],[\"love\",\"sevmek / aşk\",\"I love this song.\"],[\"consider\",\"düşünmek / değerlendirmek\",\"Consider the options.\"],[\"appear\",\"görünmek / ortaya çıkmak\",\"She appeared from nowhere.\"],[\"buy\",\"satın almak\",\"I want to buy this.\"],[\"wait\",\"beklemek\",\"Wait for me.\"],[\"serve\",\"hizmet etmek\",\"It is my duty to serve.\"],[\"die\",\"ölmek\",\"All things must die.\"],[\"send\",\"göndermek\",\"Send me the file.\"],[\"expect\",\"beklemek / ummak\",\"What do you expect?\"],[\"build\",\"inşa etmek / kurmak\",\"Build your dreams.\"]]},{\"id\":\"c9\",\"label\":\"Top Words: Adjectives\",\"icon\":\"&#127775;\",\"tag\":\"common\",\"w\":[[\"stay\",\"kalmak\",\"Stay a little longer.\"],[\"fall\",\"düşmek / sonbahar\",\"Do not fall.\"],[\"cut\",\"kesmek\",\"Cut the rope.\"],[\"reach\",\"ulaşmak\",\"Reach for the stars.\"],[\"kill\",\"öldürmek\",\"The hero killed the dragon.\"],[\"raise\",\"yükseltmek / yetiştirmek\",\"Raise your hand.\"],[\"pass\",\"geçmek / pas vermek\",\"Pass the ball.\"],[\"sell\",\"satmak\",\"She wants to sell the house.\"],[\"decide\",\"karar vermek\",\"You must decide now.\"],[\"return\",\"dönmek / iade etmek\",\"Return what you borrowed.\"],[\"explain\",\"açıklamak\",\"Please explain this.\"],[\"hope\",\"ummak / umut\",\"I hope you are well.\"],[\"develop\",\"geliştirmek\",\"Develop your skills.\"],[\"carry\",\"taşımak\",\"Can you carry this?\"],[\"break\",\"kırmak / mola\",\"Do not break it.\"],[\"receive\",\"almak / kabul etmek\",\"Did you receive my email?\"],[\"agree\",\"katılmak / razı olmak\",\"I totally agree.\"],[\"support\",\"desteklemek\",\"Support each other.\"],[\"hit\",\"vurmak / isabet\",\"Hit the target.\"],[\"produce\",\"üretmek\",\"They produce quality goods.\"],[\"eat\",\"yemek\",\"Eat your vegetables.\"],[\"cover\",\"örtmek / kapsamak\",\"Cover your mouth.\"],[\"catch\",\"yakalamak\",\"Catch the ball.\"],[\"draw\",\"çizmek / beraberlik\",\"Draw a picture.\"],[\"choose\",\"seçmek\",\"Choose wisely.\"],[\"cause\",\"sebep olmak / neden\",\"What caused this?\"],[\"require\",\"gerektirmek\",\"This requires patience.\"],[\"report\",\"rapor / bildirmek\",\"Report to the office.\"],[\"pull\",\"çekmek\",\"Pull the rope.\"],[\"raise\",\"kaldırmak\",\"Raise the flag.\"],[\"prepare\",\"hazırlamak\",\"Prepare for the exam.\"],[\"teach\",\"öğretmek\",\"She loves to teach.\"]]},{\"id\":\"c10\",\"label\":\"Connectors I\",\"icon\":\"&#128279;\",\"tag\":\"common\",\"w\":[[\"admit\",\"kabul etmek / itiraf etmek\",\"Admit your mistakes.\"],[\"protect\",\"korumak\",\"Protect those you love.\"],[\"manage\",\"yönetmek / başarmak\",\"Can you manage this?\"],[\"argue\",\"tartışmak\",\"Do not argue with me.\"],[\"share\",\"paylaşmak\",\"Share your thoughts.\"],[\"save\",\"kurtarmak / kaydetmek\",\"Save the file now.\"],[\"help\",\"yardım etmek\",\"Can you help me?\"],[\"start\",\"başlamak\",\"Start the engine.\"],[\"allow\",\"izin vermek\",\"Allow me to explain.\"],[\"add\",\"eklemek\",\"Add more sugar.\"],[\"spend\",\"harcamak\",\"Spend it wisely.\"],[\"grow\",\"büyüt\",\"Grow your business.\"],[\"listen\",\"dinlemek\",\"Listen carefully.\"],[\"bring\",\"getir\",\"Bring your friends.\"],[\"talk\",\"konuşmak\",\"We need to talk.\"],[\"turn\",\"dönmek / döndürmek\",\"Turn left here.\"],[\"ask\",\"sor\",\"Do not be afraid to ask.\"],[\"good\",\"iyi\",\"She is a good person.\"],[\"new\",\"yeni\",\"I have a new phone.\"],[\"first\",\"ilk / birinci\",\"This is my first time.\"]]},{\"id\":\"c11\",\"label\":\"Connectors II\",\"icon\":\"&#128279;\",\"tag\":\"common\",\"w\":[[\"last\",\"son / geçen\",\"This is the last chance.\"],[\"long\",\"uzun\",\"It was a long day.\"],[\"great\",\"harika / büyük\",\"You did a great job.\"],[\"little\",\"küçük / az\",\"Just a little more.\"],[\"own\",\"kendi / sahip olmak\",\"She has her own style.\"],[\"other\",\"diğer / başka\",\"Try the other one.\"],[\"old\",\"yaşlı / eski\",\"He is very old.\"],[\"right\",\"doğru / haklı\",\"You are right.\"],[\"big\",\"büyük\",\"That is a big deal.\"],[\"high\",\"yüksek\",\"Aim high.\"],[\"different\",\"farklı\",\"We are all different.\"],[\"small\",\"küçük\",\"Small steps matter.\"],[\"large\",\"büyük / geniş\",\"It was a large crowd.\"],[\"next\",\"sonraki\",\"Next stop is Main Street.\"],[\"early\",\"erken\",\"Wake up early.\"],[\"young\",\"genç\",\"She is young but wise.\"],[\"important\",\"önemli\",\"This is very important.\"],[\"public\",\"halka açık / kamu\",\"It is a public place.\"],[\"private\",\"özel / gizli\",\"That is private information.\"],[\"real\",\"gerçek\",\"Is this real?\"]]},{\"id\":\"c12\",\"label\":\"Connectors III\",\"icon\":\"&#128279;\",\"tag\":\"common\",\"w\":[[\"best\",\"en iyi\",\"Do your best.\"],[\"free\",\"özgür / ücretsiz\",\"Freedom is not free.\"],[\"strong\",\"güçlü\",\"Be strong.\"],[\"hard\",\"zor / sert\",\"Work hard.\"],[\"sure\",\"emin\",\"Are you sure?\"],[\"clear\",\"açık / net\",\"Make it clear.\"],[\"possible\",\"mümkün\",\"Anything is possible.\"],[\"true\",\"doğru / gerçek\",\"Is that true?\"],[\"whole\",\"bütün / tüm\",\"The whole team tried.\"],[\"ready\",\"hazır\",\"Are you ready?\"],[\"happy\",\"mutlu\",\"Be happy.\"],[\"bad\",\"kötü\",\"That was bad.\"],[\"beautiful\",\"güzel\",\"What a beautiful day.\"],[\"wrong\",\"yanlış\",\"That is wrong.\"],[\"simple\",\"basit / sade\",\"Keep it simple.\"],[\"open\",\"açık\",\"The door is open.\"],[\"safe\",\"güvenli\",\"You are safe here.\"],[\"fast\",\"hızlı\",\"She runs fast.\"],[\"slow\",\"yavaş\",\"Take it slow.\"],[\"dark\",\"karanlık\",\"It is dark outside.\"]]},{\"id\":\"c13\",\"label\":\"Prepositions I\",\"icon\":\"&#128205;\",\"tag\":\"common\",\"w\":[[\"light\",\"hafif / açık / ışık\",\"Turn on the light.\"],[\"full\",\"dolu\",\"The glass is full.\"],[\"empty\",\"boş\",\"The room was empty.\"],[\"rich\",\"zengin\",\"He became very rich.\"],[\"poor\",\"fakir / zayıf\",\"Help the poor.\"],[\"dead\",\"ölü / ölmüş\",\"The battery is dead.\"],[\"alive\",\"canlı / hayatta\",\"She is still alive.\"],[\"hot\",\"sıcak\",\"It is too hot today.\"],[\"cold\",\"soğuk\",\"The water is cold.\"],[\"late\",\"geç\",\"Do not be late.\"],[\"deep\",\"derin\",\"The ocean is deep.\"],[\"wide\",\"geniş\",\"Open wide.\"],[\"tall\",\"uzun boylu / yüksek\",\"He is very tall.\"],[\"short\",\"kısa / alçak\",\"Life is short.\"],[\"heavy\",\"ağır\",\"This bag is heavy.\"],[\"soft\",\"yumuşak\",\"Her voice was soft.\"],[\"smart\",\"zeki / akıllı\",\"You are so smart.\"],[\"crazy\",\"deli / çılgın\",\"That is crazy!\"],[\"strange\",\"garip / tuhaf\",\"Something strange happened.\"],[\"special\",\"özel\",\"You are special.\"]]},{\"id\":\"c14\",\"label\":\"Prepositions II\",\"icon\":\"&#128205;\",\"tag\":\"common\",\"w\":[[\"serious\",\"ciddi\",\"Be serious for once.\"],[\"funny\",\"komik / eğlenceli\",\"That was so funny.\"],[\"quiet\",\"sessiz / sakin\",\"Please be quiet.\"],[\"loud\",\"gürültülü / yüksek sesli\",\"The music is too loud.\"],[\"the\",\"(belirli artikel)\",\"The cat sat on the mat.\"],[\"a\",\"(belirsiz artikel)\",\"I saw a dog.\"],[\"and\",\"ve\",\"He and she are friends.\"],[\"or\",\"ya da / veya\",\"Tea or coffee?\"],[\"but\",\"ama / fakat\",\"I tried but failed.\"],[\"if\",\"eğer\",\"If you need help, ask.\"],[\"so\",\"bu yüzden / öyle\",\"It was late so I left.\"],[\"because\",\"çünkü\",\"I am happy because of you.\"],[\"when\",\"ne zaman / -dığında\",\"Call me when you arrive.\"],[\"where\",\"nerede / -dığı yerde\",\"I know where you live.\"],[\"how\",\"nasıl\",\"How are you?\"],[\"what\",\"ne / neler\",\"What is your name?\"],[\"who\",\"kim\",\"Who are you?\"],[\"which\",\"hangi\",\"Which one do you prefer?\"],[\"why\",\"neden / niye\",\"Why did you do that?\"],[\"that\",\"o / şu / ki\",\"I know that you are right.\"],[\"this\",\"bu\",\"This is amazing.\"],[\"these\",\"bunlar\",\"These are mine.\"],[\"those\",\"şunlar / onlar\",\"Those are yours.\"],[\"here\",\"burada / buraya\",\"Come here.\"],[\"there\",\"orada / oraya\",\"Go there.\"],[\"now\",\"şimdi\",\"Do it now.\"],[\"then\",\"sonra / o zaman\",\"Think first, then act.\"],[\"very\",\"çok\",\"I am very tired.\"],[\"just\",\"sadece / tam\",\"Just do it.\"],[\"also\",\"ayrıca / da\",\"I also agree.\"],[\"too\",\"de / da / aşırı\",\"Me too.\"],[\"only\",\"sadece / yalnızca\",\"Only you can do this.\"],[\"even\",\"bile / hatta\",\"Even I was surprised.\"],[\"still\",\"hâlâ / yine de\",\"Are you still here?\"],[\"already\",\"zaten / bile\",\"I already know.\"],[\"always\",\"her zaman\",\"Always be kind.\"],[\"never\",\"hiçbir zaman\",\"Never give up.\"],[\"often\",\"sık sık / çoğunlukla\",\"I often go there.\"],[\"sometimes\",\"bazen\",\"Sometimes I forget.\"],[\"again\",\"tekrar / yeniden\",\"Try again.\"],[\"together\",\"birlikte\",\"We are better together.\"],[\"really\",\"gerçekten\",\"Are you really sure?\"],[\"maybe\",\"belki\",\"Maybe tomorrow.\"],[\"almost\",\"neredeyse\",\"Almost there.\"],[\"enough\",\"yeterli / yeter\",\"That is enough.\"],[\"much\",\"çok (miktar)\",\"How much does it cost?\"],[\"more\",\"daha fazla\",\"I want more.\"],[\"most\",\"en fazla / çoğu\",\"Most people agree.\"],[\"less\",\"daha az\",\"Use less sugar.\"],[\"both\",\"her ikisi de\",\"Both are correct.\"],[\"few\",\"az / birkaç\",\"A few more minutes.\"],[\"many\",\"çok (sayı)\",\"There are many options.\"],[\"any\",\"herhangi bir\",\"Do you have any questions?\"],[\"all\",\"hepsi / tüm\",\"All is well.\"],[\"some\",\"bazı / biraz\",\"Some people never learn.\"],[\"each\",\"her biri\",\"Each day is a gift.\"],[\"every\",\"her\",\"Every second counts.\"],[\"no\",\"hayır / hiç\",\"No pain no gain.\"],[\"not\",\"değil\",\"I am not afraid.\"],[\"yes\",\"evet\",\"Yes, I understand.\"],[\"please\",\"lütfen\",\"Please be careful.\"],[\"thank\",\"teşekkür etmek\",\"Thank you so much.\"],[\"sorry\",\"özür dilemek / üzgün\",\"I am so sorry.\"],[\"hello\",\"merhaba\",\"Hello, how are you?\"],[\"goodbye\",\"güle güle / hoşça kal\",\"Goodbye and good luck.\"],[\"okay\",\"tamam / peki\",\"Okay, let us do this.\"],[\"well\",\"iyi / peki / aslında\",\"Well, that is interesting.\"],[\"about\",\"hakkında / yaklaşık\",\"Tell me about yourself.\"],[\"after\",\"sonra / -dan sonra\",\"Call me after lunch.\"],[\"before\",\"önce / -dan önce\",\"Think before you speak.\"],[\"between\",\"arasında\",\"Choose between the two.\"],[\"during\",\"sırasında / esnasında\",\"Stay calm during the storm.\"],[\"without\",\"olmadan / -sız\",\"I cannot live without music.\"],[\"through\",\"içinden / aracılığıyla\",\"Walk through the door.\"],[\"against\",\"karşı / -e karşı\",\"She fought against injustice.\"],[\"with\",\"ile / beraber\",\"Come with me.\"],[\"from\",\"dan / den\",\"Where are you from?\"],[\"into\",\"içine\",\"Jump into the pool.\"],[\"over\",\"üzerinde / bitti\",\"The game is over.\"],[\"under\",\"altında\",\"The cat is under the table.\"],[\"again\",\"yeniden\",\"Start again.\"],[\"around\",\"etrafında / yaklaşık\",\"Look around you.\"],[\"until\",\"kadar / -e kadar\",\"Wait until I arrive.\"],[\"since\",\"beri / -den beri\",\"I have been here since morning.\"],[\"while\",\"iken / -irken\",\"Call me while you wait.\"],[\"though\",\"rağmen / -e karşın\",\"Though tired, she kept going.\"],[\"however\",\"ancak / bununla birlikte\",\"I tried, however I failed.\"],[\"therefore\",\"bu nedenle / dolayısıyla\",\"Therefore, we must act now.\"],[\"although\",\"her ne kadar / -e rağmen\",\"Although it rained, we played.\"],[\"unless\",\"-medikçe / eğer ... değilse\",\"Unless you try, you will never know.\"],[\"once\",\"bir kez / bir zamanlar\",\"Once upon a time.\"],[\"whether\",\"olup olmadığını / -ip -mediğini\",\"I wonder whether she knows.\"],[\"either\",\"ya ... ya da / ikisi de\",\"Either way is fine.\"],[\"neither\",\"ne ... ne de\",\"Neither of them came.\"],[\"instead\",\"bunun yerine\",\"Try this instead.\"],[\"else\",\"başka / yoksa\",\"What else can I do?\"],[\"above\",\"yukarıda / üstünde\",\"Look above the clouds.\"],[\"below\",\"aşağıda / altında\",\"The answer is below.\"],[\"behind\",\"arkasında\",\"She stood behind him.\"],[\"beside\",\"yanında / -in yanı sıra\",\"Sit beside me.\"],[\"toward\",\"doğru / -e doğru\",\"Walk toward the light.\"],[\"within\",\"içinde / -in içinde\",\"Finish within an hour.\"],[\"beyond\",\"ötesinde / -in ötesinde\",\"Beyond the mountains.\"],[\"along\",\"boyunca / birlikte\",\"Walk along the river.\"],[\"upon\",\"üzerine / -in üzerinde\",\"Once upon a time.\"],[\"across\",\"karşısında / bir yandan öbür yana\",\"Walk across the bridge.\"]]}]");
+var SENTS  = JSON.parse("[{\"en\":\"The ___ bounced off the rim.\",\"blank\":\"ball\",\"tr\":\"Top çemberden sekmedi.\"},{\"en\":\"She made a ___ to the open player.\",\"blank\":\"pass\",\"tr\":\"Açık oyuncuya pas verdi.\"},{\"en\":\"The ___ called a timeout.\",\"blank\":\"coach\",\"tr\":\"Antrenör mola istedi.\"},{\"en\":\"He was arrested on ___.\",\"blank\":\"suspicion\",\"tr\":\"Şüpheyle tutuklandı.\"},{\"en\":\"The ___ solved the case.\",\"blank\":\"detective\",\"tr\":\"Dedektif davayı çözdü.\"},{\"en\":\"The ___ found him guilty.\",\"blank\":\"jury\",\"tr\":\"Jüri onu suçlu buldu.\"},{\"en\":\"The ___ sat on the Iron Throne.\",\"blank\":\"king\",\"tr\":\"Kral Demir Tahta oturdu.\"},{\"en\":\"The ___ burned the city.\",\"blank\":\"dragon\",\"tr\":\"Ejderha şehri yaktı.\"},{\"en\":\"They formed an ___.\",\"blank\":\"alliance\",\"tr\":\"Bir ittifak kurdular.\"},{\"en\":\"The hobbit began his ___.\",\"blank\":\"quest\",\"tr\":\"Hobbit macerasına başladı.\"},{\"en\":\"The ring had great ___.\",\"blank\":\"power\",\"tr\":\"Yüzüğün büyük gücü vardı.\"},{\"en\":\"She had strong ___.\",\"blank\":\"faith\",\"tr\":\"Güçlü bir inancı vardı.\"},{\"en\":\"The prophet delivered a ___.\",\"blank\":\"message\",\"tr\":\"Peygamber bir mesaj iletti.\"},{\"en\":\"Never ___ up.\",\"blank\":\"give\",\"tr\":\"Asla pes etme.\"},{\"en\":\"I ___ your help.\",\"blank\":\"need\",\"tr\":\"Yardımına ihtiyacım var.\"},{\"en\":\"Choose ___.\",\"blank\":\"wisely\",\"tr\":\"Akıllıca seç.\"},{\"en\":\"Knowledge is ___.\",\"blank\":\"power\",\"tr\":\"Bilgi güçtür.\"},{\"en\":\"Always be ___.\",\"blank\":\"kind\",\"tr\":\"Her zaman nazik ol.\"},{\"en\":\"The evidence was ___.\",\"blank\":\"clear\",\"tr\":\"Kanıt açıktı.\"},{\"en\":\"The ___ lasted for months.\",\"blank\":\"siege\",\"tr\":\"Kuşatma aylarca sürdü.\"}]");
+
+var S = {
+  xp:     +(localStorage.getItem('en_xp')    ||0),
+  streak: +(localStorage.getItem('en_streak')||0),
+  words:  +(localStorage.getItem('en_words') ||0),
+  done:   JSON.parse(localStorage.getItem('en_done')  ||'[]'),
+  prog:   JSON.parse(localStorage.getItem('en_prog')  ||'{}')
+};
+var L = null;
+
+function saveS(){
+  localStorage.setItem('en_xp',     S.xp);
+  localStorage.setItem('en_streak', S.streak);
+  localStorage.setItem('en_words',  S.words);
+  localStorage.setItem('en_done',   JSON.stringify(S.done));
+  localStorage.setItem('en_prog',   JSON.stringify(S.prog));
+}
+
+function speak(word){
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(word);
+  u.lang = 'en-US'; u.rate = 0.85; u.pitch = 1.05;
+  speechSynthesis.speak(u);
+}
+
+function showScr(id){
+  document.querySelectorAll('.scr').forEach(function(s){s.classList.remove('act');});
+  document.getElementById('s-'+id).classList.add('act');
+  refreshSB(id);
+}
+
+function toggleSB(){
+  var sb = document.getElementById('sb');
+  var btn = document.getElementById('sb-toggle');
+  sb.classList.toggle('collapsed');
+  btn.innerHTML = sb.classList.contains('collapsed') ? '&#9776;' : '&#10005;';
+  btn.style.left = sb.classList.contains('collapsed') ? '12px' : '258px';
+}
+
+function refreshSB(activeId){
+  document.getElementById('sb-xp').textContent  = S.xp;
+  document.getElementById('sb-str').textContent = S.streak;
+  document.getElementById('sb-wds').textContent = S.words;
+  var nav = document.getElementById('sb-nav');
+  var H = '';
+  H += sbSec('Menu');
+  H += sbBtn('&#127968;','Home',   'showHome()', activeId==='home');
+  H += sbBtn('&#128218;','Vocab',  'showVocab()',activeId==='vocab');
+  var tags = [
+    {label:'&#127936; Basketball', tag:'basketball'},
+    {label:'&#128110; Police',     tag:'police'},
+    {label:'&#9876; Game of Thrones', tag:'got'},
+    {label:'&#128141; Lord of the Rings', tag:'lotr'},
+    {label:'&#128591; Religion',   tag:'religion'},
+    {label:'&#128293; Top 1000',   tag:'common'}
+  ];
+  tags.forEach(function(t){
+    H += sbSec(t.label);
+    UNITS.filter(function(u){return u.tag===t.tag;}).forEach(function(u){ H += sbUnit(u); });
+  });
+  nav.innerHTML = H;
+}
+function sbSec(l){ return '<div class="sb-sec">'+l+'</div>'; }
+function sbBtn(ic,lbl,fn,active){
+  return '<div class="si'+(active?' act':'')+'" onclick="'+fn+'">'
+    +'<span class="ic">'+ic+'</span><span class="lb">'+lbl+'</span></div>';
+}
+function sbUnit(u){
+  var idx = UNITS.findIndex(function(x){return x.id===u.id;});
+  var done   = S.done.indexOf(u.id)!==-1;
+  var locked = idx>0 && S.done.indexOf(UNITS[idx-1].id)===-1;
+  var p      = S.prog[u.id]||0;
+  return '<div class="si'+(done?' done':'')+(locked?' locked':'')+'" onclick="'+(locked?'':'startLesson('+JSON.stringify(u.id)+')')+'">'
+    +'<span class="ic">'+(done?'&#9989;':u.icon)+'</span>'
+    +'<span class="lb">'+u.label+'</span>'
+    +'<span class="bk">'+u.w.length+'</span>'
+    +(!locked&&!done?'<div class="si-prog"><div class="si-pf" style="width:'+p+'%"></div></div>':'')
+    +'</div>';
+}
+
+function showHome(){
+  var done=S.done.length, total=UNITS.length;
+  var pct=Math.round(done/total*100);
+  var next=null;
+  for(var i=0;i<UNITS.length;i++){if(S.done.indexOf(UNITS[i].id)===-1){next=UNITS[i];break;}}
+  var nid = next?next.id:UNITS[0].id;
+  var tags = [
+    {label:'&#127936; Basketball', tag:'basketball'},
+    {label:'&#128110; Police &amp; Crime', tag:'police'},
+    {label:'&#9876; Game of Thrones', tag:'got'},
+    {label:'&#128141; Lord of the Rings', tag:'lotr'},
+    {label:'&#128591; Religions', tag:'religion'},
+    {label:'&#128293; Top 1000 Words', tag:'common'}
+  ];
+  var H = '<div class="hi">'
+    +'<div class="hdr">'
+    +'<h1>ENGLISH BOOST</h1>'
+    +'<p>Learn English in Turkish &nbsp;&middot;&nbsp; '+total+' units &nbsp;&middot;&nbsp; 1000+ words &nbsp;&middot;&nbsp; 6 themes</p>'
+    +'<div class="op-lbl"><span>Overall Progress</span><span>'+done+'/'+total+' units &nbsp;&middot;&nbsp; '+S.xp+' XP</span></div>'
+    +'<div class="op-bar"><div class="op-f" style="width:'+pct+'%"></div></div>'
+    +'<button class="go-btn" id="home-go-btn">&#9654; '+(next?'Continue':'Play Again')+'</button>'
+    +'</div>';
+  tags.forEach(function(t){
+    var units = UNITS.filter(function(u){return u.tag===t.tag;});
+    H += '<div class="ps"><div class="ps-title">'+t.label+'</div><div class="pnodes">';
+    units.forEach(function(u,i){
+      var done2=S.done.indexOf(u.id)!==-1;
+      var locked=i>0&&S.done.indexOf(units[i-1].id)===-1;
+      var isNext=!done2&&(i===0||S.done.indexOf(units[i-1].id)!==-1);
+      var p2=S.prog[u.id]||0;
+      H += '<div class="pn'+(done2?' done':'')+(locked?' locked':'')+(isNext?' nxt':'')+'" data-uid="'+u.id+'">'
+          +(done2?'<div class="pn-ck">&#9989;</div>':'')
+          +'<div class="pn-ic">'+u.icon+'</div>'
+          +'<div class="pn-t">'+u.label+'</div>'
+          +'<div class="pn-s">'+u.w.length+' words</div>'
+          +'<div class="pn-bar"><div class="pn-f" style="width:'+(done2?100:p2)+'%"></div></div>'
+          +'</div>';
+    });
+    H += '</div></div>';
+  });
+  H += '</div>';
+  document.getElementById('s-home').innerHTML = H;
+  document.getElementById('home-go-btn').addEventListener('click',function(){startLesson(nid);});
+  document.querySelectorAll('.pn:not(.locked)').forEach(function(el){
+    el.addEventListener('click',function(){startLesson(el.dataset.uid);});
+  });
+  showScr('home');
+}
+
+var vTag='all';
+function showVocab(){
+  var H = '<div class="vi"><div class="pg-t">&#128218; Vocabulary Browser</div>'
+    +'<div class="vctrls">'
+    +'<input class="vsrch" id="vsrch" placeholder="Search English or Turkish...">'
+    +'<button class="vtag on" data-tag="all">All</button>'
+    +'<button class="vtag" data-tag="basketball">&#127936; Basketball</button>'
+    +'<button class="vtag" data-tag="police">&#128110; Police</button>'
+    +'<button class="vtag" data-tag="got">&#9876; GOT</button>'
+    +'<button class="vtag" data-tag="lotr">&#128141; LOTR</button>'
+    +'<button class="vtag" data-tag="religion">&#128591; Religion</button>'
+    +'<button class="vtag" data-tag="common">&#128293; Common</button>'
+    +'</div>'
+    +'<div style="overflow-x:auto"><table class="vtbl"><thead><tr><th>English</th><th>Turkish</th><th>Category</th><th></th></tr></thead>'
+    +'<tbody id="vtbody"></tbody></table></div></div>';
+  document.getElementById('s-vocab').innerHTML = H;
+  document.getElementById('vsrch').addEventListener('input',renderVTable);
+  document.querySelectorAll('.vtag').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.vtag').forEach(function(b){b.classList.remove('on');});
+      btn.classList.add('on'); vTag=btn.dataset.tag; renderVTable();
+    });
+  });
+  renderVTable();
+  showScr('vocab');
+}
+function renderVTable(){
+  var q=(document.getElementById('vsrch')||{value:''}).value.toLowerCase();
+  var all=[];
+  var keys=['basketball','police','got','lotr','religion','common'];
+  keys.forEach(function(k){
+    VOCAB[k].forEach(function(w){all.push({en:w[0],tr:w[1],ex:w[2],tag:k});});
+  });
+  all=all.filter(function(w){
+    return (vTag==='all'||w.tag===vTag)&&(!q||w.en.toLowerCase().indexOf(q)!==-1||w.tr.toLowerCase().indexOf(q)!==-1);
+  });
+  var rows='';
+  all.forEach(function(w){
+    rows+='<tr>'
+      +'<td style="font-weight:800;color:var(--or)">'+w.en+'</td>'
+      +'<td>'+w.tr+'</td>'
+      +'<td><span class="vtp '+w.tag+'">'+w.tag+'</span></td>'
+      +'<td><button class="lbtn" style="margin:0;padding:3px 8px;font-size:11px" data-spk="'+w.en+'">&#128266;</button></td>'
+      +'</tr>';
+  });
+  var tb=document.getElementById('vtbody');
+  if(tb){
+    tb.innerHTML=rows;
+    tb.querySelectorAll('[data-spk]').forEach(function(btn){
+      btn.addEventListener('click',function(){speak(btn.dataset.spk);});
+    });
+  }
+}
+
+function startLesson(uid){
+  var unit=null;
+  for(var i=0;i<UNITS.length;i++){if(UNITS[i].id===uid){unit=UNITS[i];break;}}
+  if(!unit) return;
+  L={unit:unit,uid:uid,exs:buildExs(unit),idx:0,hearts:3,xp:0,correct:0,mistakes:[],answered:false};
+  showScr('lesson');
+  renderTopbar();
+  renderEx();
+}
+
+function getPrev(unit){
+  var idx=UNITS.findIndex(function(u){return u.id===unit.id;});
+  var out=[];
+  for(var i=0;i<idx;i++){if(S.done.indexOf(UNITS[i].id)!==-1)out=out.concat(UNITS[i].w);}
+  return out;
+}
+
+function mkW(arr){return {en:arr[0],tr:arr[1],ex:arr[2]};}
+
+function buildExs(unit){
+  var W = unit.w.map(mkW);
+  var exs=[];
+  W.forEach(function(w){exs.push({type:'intro',w:w,phase:1});});
+  shuf(W.slice()).forEach(function(w){
+    exs.push({type:'lf',  w:w,phase:2});
+    exs.push({type:'mc',  w:w,pool:W,phase:2,dir:Math.random()<0.5?'en2tr':'tr2en'});
+  });
+  shuf(W.slice()).forEach(function(w){
+    exs.push({type:'type',w:w,phase:3,dir:Math.random()<0.5?'en2tr':'tr2en'});
+  });
+  chunk(shuf(W.slice()),4).forEach(function(g){if(g.length>=3)exs.push({type:'match',words:g,phase:3});});
+  SENTS.sort(function(){return Math.random()-.5;}).slice(0,3).forEach(function(s){
+    exs.push({type:'fill',sent:s,phase:4});
+  });
+  shuf(W.slice()).slice(0,3).forEach(function(w){exs.push({type:'build',w:w,phase:4});});
+  exs.push({type:'wf',words:W.slice(0,6),phase:5});
+  var prev=getPrev(unit).map(mkW);
+  if(prev.length>=2){
+    shuf(prev.slice()).slice(0,3).forEach(function(w){
+      exs.push({type:'mc',w:w,pool:prev.slice(0,8).concat(W.slice(0,4)).map(function(x){return typeof x.en==='undefined'?mkW(x):x;}),phase:6,review:true,dir:Math.random()<0.5?'en2tr':'tr2en'});
+    });
+  }
+  var out=[];
+  for(var p=1;p<=6;p++) exs.filter(function(e){return e.phase===p;}).forEach(function(e){out.push(e);});
+  return out.slice(0,30);
+}
+
+function shuf(a){return a.sort(function(){return Math.random()-.5;});}
+function chunk(a,n){var r=[];for(var i=0;i<a.length;i+=n)r.push(a.slice(i,i+n));return r;}
+function lev(a,b){
+  var m=a.length,n=b.length,d=[];
+  for(var i=0;i<=m;i++){d[i]=[];for(var j=0;j<=n;j++)d[i][j]=i?j?0:i:j;}
+  for(var i=1;i<=m;i++)for(var j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+function renderTopbar(){
+  if(!L) return;
+  var pct=Math.round(L.idx/L.exs.length*100);
+  var ex=L.exs[L.idx];
+  var phN=['','&#128218; Learn','&#128269; Recognize','&#9997; Recall','&#128221; Sentences','&#128270; Word Find','&#128260; Review'];
+  var ph=ex?ex.phase:6;
+  var hh='';
+  for(var i=0;i<3;i++) hh+='<span class="hrt'+(i>=L.hearts?' lost':'')+'">❤️</span>';
+  document.getElementById('ltb').innerHTML=
+    '<button class="ltb-x" id="ltb-exit">&#10005;</button>'
+    +'<div><div class="ltb-u">'+L.unit.label+'</div><div class="ltb-ph">'+(phN[ph]||'')+'</div></div>'
+    +'<div class="ltb-pw"><div class="ltb-p" style="width:'+pct+'%"></div></div>'
+    +'<div class="ltb-hh">'+hh+'</div>';
+  document.getElementById('ltb-exit').addEventListener('click',function(){
+    if(confirm('Exit lesson? Progress will be lost.')) showHome();
+  });
+}
+
+function renderEx(){
+  if(!L) return;
+  if(L.idx>=L.exs.length){showComplete();return;}
+  var ex=L.exs[L.idx];
+  L.answered=false;
+  renderTopbar();
+  S.prog[L.uid]=Math.round(L.idx/L.exs.length*100);
+  saveS(); refreshSB('lesson');
+  var area=document.getElementById('ex-area');
+  area.innerHTML='';
+  var fns={intro:renderIntro,lf:renderLF,mc:renderMC,type:renderType,match:renderMatch,fill:renderFill,build:renderBuild,wf:renderWF};
+  if(fns[ex.type]) fns[ex.type](ex,area); else advance();
+}
+
+function showFB(ok,msg){
+  var fb=document.getElementById('fb');if(!fb)return;
+  fb.className='fb show '+(ok?'ok':'fail');
+  fb.innerHTML=(ok?'&#9989; ':'&#10060; ')+msg;
+}
+function showCont(area){var b=area.querySelector('.cbtn');if(b)b.classList.add('show');}
+function advance(){L.idx++;renderEx();}
+function loseHeart(w){
+  L.hearts=Math.max(0,L.hearts-1);
+  if(w&&!L.mistakes.some(function(m){return m.en===w.en;})) L.mistakes.push(w);
+  renderTopbar();
+  if(L.hearts<=0) setTimeout(showGO,600);
+}
+
+function renderIntro(ex,area){
+  var w=ex.w;
+  area.innerHTML='<div class="exc">'
+    +'<div class="exlbl">&#128218; New Word</div>'
+    +'<div class="ibox">'
+    +'<div class="iit">'+w.en+'</div>'
+    +'<div class="itr">'+w.tr+'</div>'
+    +(w.ex?'<div class="iex">'+w.ex+'</div>':'')
+    +'</div>'
+    +'<button class="lbtn" id="spk-i">&#128266; Listen</button>'
+    +'</div>'
+    +'<button class="cbtn show" id="cont-btn">Got it! Continue &#8594;</button>';
+  document.getElementById('spk-i').addEventListener('click',function(){speak(w.en);});
+  document.getElementById('cont-btn').addEventListener('click',advance);
+  speak(w.en);
+}
+
+function renderLF(ex,area){
+  var w=ex.w;
+  var letters=w.en.split('');
+  var hide=[];
+  letters.forEach(function(ch,i){if(i>0&&ch!==' '&&Math.random()<0.45)hide.push(i);});
+  if(!hide.length){var m=Math.floor(letters.length/2);if(letters[m]!==' ')hide.push(m);}
+  var H='<div class="exc">'
+    +'<div class="exlbl">&#128292; Fill in the Missing Letters</div>'
+    +'<div class="lfhint">Turkish: <strong style="color:var(--orl)">'+w.tr+'</strong></div>'
+    +'<div class="lfw" id="lfw-wrap">';
+  letters.forEach(function(ch,i){
+    if(ch===' '){H+='<div style="width:14px"></div>';return;}
+    if(hide.indexOf(i)!==-1){
+      H+='<div class="lfbl"><input class="lfi" data-idx="'+i+'" data-ans="'+ch.toLowerCase()+'" maxlength="1" autocomplete="off" autocorrect="off" spellcheck="false"></div>';
+    } else {
+      H+='<div class="lfch">'+ch+'</div>';
+    }
+  });
+  H+='</div><button class="lbtn" id="spk-lf">&#128266; Hear it</button>'
+    +'<div class="fb" id="fb"></div></div>'
+    +'<button class="cbtn" id="cont-btn">Continue &#8594;</button>';
+  area.innerHTML=H;
+  document.getElementById('spk-lf').addEventListener('click',function(){speak(w.en);});
+  document.getElementById('cont-btn').addEventListener('click',advance);
+  var inputs=area.querySelectorAll('.lfi');
+  inputs.forEach(function(inp){
+    inp.addEventListener('input',function(){
+      var val=inp.value.toLowerCase();
+      var ans=inp.dataset.ans.toLowerCase();
+      if(val===ans){
+        inp.classList.add('ok');
+        var all=Array.prototype.slice.call(area.querySelectorAll('.lfi'));
+        var ci=all.indexOf(inp);
+        if(ci<all.length-1) all[ci+1].focus();
+        var done=all.every(function(x){return x.value.toLowerCase()===x.dataset.ans.toLowerCase();});
+        if(done&&!L.answered){L.answered=true;L.xp+=10;L.correct++;showFB(true,'Perfect! +10 XP');showCont(area);speak(w.en);}
+      } else if(val){
+        inp.classList.add('bad');
+        setTimeout(function(){inp.classList.remove('bad');inp.value='';},300);
+      }
+    });
+  });
+  if(inputs.length) setTimeout(function(){inputs[0].focus();},60);
+}
+
+function renderMC(ex,area){
+  var w=ex.w;
+  var dir=ex.dir||'en2tr';
+  var qText=dir==='en2tr'?w.en:w.tr;
+  var correct=dir==='en2tr'?w.tr:w.en;
+  var pool=(ex.pool||[]).filter(function(p){return (dir==='en2tr'?p.tr:p.en)!==correct;});
+  var dist=shuf(pool.slice()).slice(0,3).map(function(p){return dir==='en2tr'?p.tr:p.en;});
+  while(dist.length<3) dist.push(['to go','red','fast','small'][dist.length]||'other');
+  var choices=shuf([correct].concat(dist.slice(0,3)));
+  var label=dir==='en2tr'?'Translate to Turkish':'Translate to English';
+  var badge=dir==='en2tr'?'<span class="dir-badge en">EN &#8594; TR</span>':'<span class="dir-badge tr">TR &#8594; EN</span>';
+  var H='<div class="exc">'
+    +'<div class="exlbl">&#128269; '+label+(ex.review?'<span class="rvbdg">review</span>':'')+'</div>'
+    +badge
+    +'<div class="exq">'+qText+'</div>'
+    +(dir==='en2tr'?'<button class="lbtn" id="spk-mc">&#128266; Listen</button>':'')
+    +'<div class="choices" id="ch-wrap">';
+  choices.forEach(function(c){H+='<button class="chbtn" data-val="'+c+'">'+c+'</button>';});
+  H+='</div><div class="fb" id="fb"></div></div><button class="cbtn" id="cont-btn">Continue &#8594;</button>';
+  area.innerHTML=H;
+  var spkBtn=document.getElementById('spk-mc');
+  if(spkBtn) spkBtn.addEventListener('click',function(){speak(w.en);});
+  document.getElementById('cont-btn').addEventListener('click',advance);
+  area.querySelectorAll('.chbtn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      if(L.answered) return;
+      L.answered=true;
+      area.querySelectorAll('.chbtn').forEach(function(b){b.disabled=true;});
+      if(btn.dataset.val===correct){
+        btn.classList.add('correct');
+        showFB(true,'Correct! +10 XP');L.xp+=10;L.correct++;
+      } else {
+        btn.classList.add('wrong');
+        area.querySelectorAll('.chbtn').forEach(function(b){if(b.dataset.val===correct)b.classList.add('correct');});
+        showFB(false,'Answer: '+correct);
+        loseHeart(w);
+      }
+      showCont(area);
+    });
+  });
+}
+
+function renderType(ex,area){
+  var w=ex.w;
+  var dir=ex.dir||'en2tr';
+  var qText=dir==='en2tr'?'What is the Turkish for: ':'What is the English for: ';
+  var shown=dir==='en2tr'?w.en:w.tr;
+  var correct=dir==='en2tr'?w.tr:w.en;
+  var badge=dir==='en2tr'?'<span class="dir-badge en">EN &#8594; TR</span>':'<span class="dir-badge tr">TR &#8594; EN</span>';
+  area.innerHTML='<div class="exc">'
+    +'<div class="exlbl">&#9997; Type the Answer'+(ex.review?'<span class="rvbdg">review</span>':'')+'</div>'
+    +badge
+    +'<div class="exq">'+qText+'<span style="color:var(--orl)">'+shown+'</span> ?</div>'
+    +(dir==='en2tr'?'<button class="lbtn" id="spk-ty">&#128266; Hear it</button>':'')
+    +'<div class="trow"><input class="tinp" id="ty-inp" placeholder="Type your answer..." autocomplete="off" autocorrect="off" spellcheck="false">'
+    +'<button class="ckbtn" id="ty-ck">Check</button></div>'
+    +'<div class="fb" id="fb"></div></div>'
+    +'<button class="cbtn" id="cont-btn">Continue &#8594;</button>';
+  var spkBtn=document.getElementById('spk-ty');
+  if(spkBtn) spkBtn.addEventListener('click',function(){speak(w.en);});
+  document.getElementById('cont-btn').addEventListener('click',advance);
+  var inp=document.getElementById('ty-inp');
+  function check(){
+    if(L.answered||!inp.value.trim()) return;
+    L.answered=true; inp.disabled=true;
+    var val=inp.value.trim().toLowerCase();
+    var cor=correct.toLowerCase();
+    var ok=val===cor||lev(val,cor)<=2;
+    inp.classList.add(ok?'correct':'wrong');
+    if(ok){showFB(true,'Perfect! +12 XP');L.xp+=12;L.correct++;if(dir==='en2tr')speak(w.en);}
+    else{showFB(false,'Answer: '+correct);loseHeart(w);}
+    showCont(area);
+  }
+  document.getElementById('ty-ck').addEventListener('click',check);
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter')check();});
+  setTimeout(function(){inp.focus();},80);
+}
+
+function renderFill(ex,area){
+  var s=ex.sent;
+  var parts=s.en.split('___');
+  var sentH='';
+  parts.forEach(function(p,i){
+    sentH+=p;
+    if(i<parts.length-1){
+      sentH+='<input class="blanki" data-idx="'+i+'" style="min-width:'+Math.max(70,(s.blank||'').length*13)+'px" autocomplete="off" autocorrect="off" spellcheck="false">';
+    }
+  });
+  area.innerHTML='<div class="exc">'
+    +'<div class="exlbl">&#128221; Fill in the Blank</div>'
+    +'<div class="exs">&#127481;&#127479; '+s.tr+'</div>'
+    +'<div class="sent">'+sentH+'</div>'
+    +'<button class="ckbtn" id="fill-ck" style="width:100%;margin-top:8px">Check</button>'
+    +'<div class="fb" id="fb"></div></div>'
+    +'<button class="cbtn" id="cont-btn">Continue &#8594;</button>';
+  document.getElementById('cont-btn').addEventListener('click',advance);
+  document.getElementById('fill-ck').addEventListener('click',function(){
+    if(L.answered) return;
+    var inp=area.querySelector('.blanki');
+    if(!inp) return;
+    inp.disabled=true;
+    var ok=inp.value.trim().toLowerCase()===(s.blank||'').toLowerCase()||lev(inp.value.trim().toLowerCase(),(s.blank||'').toLowerCase())<=1;
+    inp.classList.add(ok?'correct':'wrong');
+    L.answered=true;
+    if(ok){showFB(true,'Excellent! +15 XP');L.xp+=15;L.correct++;}
+    else{showFB(false,'Answer: '+s.blank);loseHeart(null);}
+    showCont(area);
+  });
+  var bi=area.querySelector('.blanki');
+  if(bi){
+    bi.addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('fill-ck').click();});
+    setTimeout(function(){bi.focus();},80);
+  }
+}
+
+var _built=[];
+function renderBuild(ex,area){
+  var w=ex.w;
+  var sentence='I need '+w.en+' to win';
+  var tokens=shuf(sentence.split(' '));
+  _built=[];
+  var chips='';
+  tokens.forEach(function(tok,i){
+    chips+='<div class="wchip" data-idx="'+i+'" data-word="'+tok+'">'+tok+'</div>';
+  });
+  area.innerHTML='<div class="exc">'
+    +'<div class="exlbl">&#128221; Build the Sentence</div>'
+    +'<div class="exs">&#127481;&#127479; Kazanmak için '+w.tr+' gerekiyor</div>'
+    +'<div class="bzone" id="bzone"></div>'
+    +'<div class="wbank" id="wbank">'+chips+'</div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button class="ckbtn" id="bd-ck" style="flex:1">Check</button>'
+    +'<button class="ckbtn" id="bd-cl" style="background:var(--s3);border:1px solid var(--br);color:var(--t2)">Clear</button>'
+    +'</div><div class="fb" id="fb"></div></div>'
+    +'<button class="cbtn" id="cont-btn">Continue &#8594;</button>';
+  document.getElementById('cont-btn').addEventListener('click',advance);
+  area.querySelectorAll('.wchip').forEach(function(chip){
+    chip.addEventListener('click',function(){
+      if(chip.classList.contains('used')) return;
+      chip.classList.add('used');
+      _built.push({idx:parseInt(chip.dataset.idx),word:chip.dataset.word});
+      var el=document.createElement('div');el.className='bchip';el.textContent=chip.dataset.word;
+      var cidx=parseInt(chip.dataset.idx);
+      el.addEventListener('click',function(){chip.classList.remove('used');_built=_built.filter(function(b){return b.idx!==cidx;});el.remove();});
+      document.getElementById('bzone').appendChild(el);
+    });
+  });
+  document.getElementById('bd-cl').addEventListener('click',function(){
+    _built=[];
+    area.querySelectorAll('.wchip').forEach(function(c){c.classList.remove('used');});
+    document.getElementById('bzone').innerHTML='';
+  });
+  document.getElementById('bd-ck').addEventListener('click',function(){
+    if(L.answered) return;
+    var built=_built.map(function(b){return b.word;}).join(' ');
+    L.answered=true;
+    if(built.toLowerCase()===sentence.toLowerCase()){showFB(true,'Perfect! +15 XP');L.xp+=15;L.correct++;}
+    else{showFB(false,'Correct: '+sentence);loseHeart(null);}
+    showCont(area);
+  });
+}
+
+var _mSel=null,_mDone=[],_mCount=0,_mTotal=0;
+function renderMatch(ex,area){
+  var pairs=ex.words.slice(0,4);
+  _mSel=null;_mDone=[];_mCount=0;_mTotal=pairs.length;
+  var lefts=shuf(pairs.slice());
+  var rights=shuf(pairs.slice());
+  var lH=lefts.map(function(p){return '<div class="mi" data-side="en" data-en="'+p.en+'" data-tr="'+p.tr+'">'+p.en+'</div>';}).join('');
+  var rH=rights.map(function(p){return '<div class="mi" data-side="tr" data-en="'+p.en+'" data-tr="'+p.tr+'">'+p.tr+'</div>';}).join('');
+  area.innerHTML='<div class="exc">'
+    +'<div class="exlbl">&#128279; Match: English &#8596; Turkish</div>'
+    +'<div class="mgrid" style="margin-top:13px">'
+    +'<div class="mcol">'+lH+'</div>'
+    +'<div class="mcol">'+rH+'</div>'
+    +'</div><div class="fb" id="fb"></div></div>'
+    +'<button class="cbtn" id="cont-btn">Continue &#8594;</button>';
+  document.getElementById('cont-btn').addEventListener('click',advance);
+  area.querySelectorAll('.mi').forEach(function(el){
+    el.addEventListener('click',function(){
+      if(el.classList.contains('matched')) return;
+      if(!_mSel){
+        area.querySelectorAll('.mi').forEach(function(e){e.classList.remove('sel');});
+        el.classList.add('sel');_mSel=el;
+      } else {
+        var prev=_mSel;
+        if(prev===el){el.classList.remove('sel');_mSel=null;return;}
+        if(prev.dataset.side===el.dataset.side){
+          area.querySelectorAll('.mi').forEach(function(e){e.classList.remove('sel');});
+          el.classList.add('sel');_mSel=el;return;
+        }
+        if(prev.dataset.en===el.dataset.en&&prev.dataset.tr===el.dataset.tr){
+          speak(el.dataset.en);
+          [prev,el].forEach(function(e){e.classList.remove('sel');e.classList.add('matched');});
+          _mCount++;L.xp+=8;
+          if(_mCount>=_mTotal){showFB(true,'All matched! +32 XP');L.correct++;showCont(area);L.answered=true;}
+        } else {
+          [prev,el].forEach(function(e){e.classList.remove('sel');e.classList.add('fw');setTimeout(function(){e.classList.remove('fw');},350);});
+          loseHeart(null);
+        }
+        _mSel=null;
+      }
+    });
+  });
+}
+
+var _wfDown=false,_wfSel=[],_wfGrid=[],_wfPlaced=[],_wfFound=[];
+function renderWF(ex,area){
+  var targets=ex.words.slice(0,5).map(function(w){return w.en.toUpperCase().replace(/[\s\-]/g,'').substring(0,9);});
+  var SZ=11;
+  _wfGrid=[];for(var r=0;r<SZ;r++){_wfGrid[r]=[];for(var c=0;c<SZ;c++)_wfGrid[r][c]='';}
+  _wfPlaced=[];_wfFound=[];_wfSel=[];
+  targets.forEach(function(word){
+    for(var t=0;t<150;t++){
+      var dir=Math.random()<.5?'h':'v';
+      var row=Math.floor(Math.random()*(SZ-(dir==='v'?word.length:0)));
+      var col=Math.floor(Math.random()*(SZ-(dir==='h'?word.length:0)));
+      var ok=true;
+      for(var i=0;i<word.length;i++){var rr=dir==='v'?row+i:row,cc=dir==='h'?col+i:col;if(_wfGrid[rr][cc]&&_wfGrid[rr][cc]!==word[i]){ok=false;break;}}
+      if(ok){for(var i=0;i<word.length;i++){var rr2=dir==='v'?row+i:row,cc2=dir==='h'?col+i:col;_wfGrid[rr2][cc2]=word[i];}_wfPlaced.push({word:word,r:row,c:col,dir:dir});break;}
+    }
+  });
+  var ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for(var r=0;r<SZ;r++) for(var c=0;c<SZ;c++) if(!_wfGrid[r][c]) _wfGrid[r][c]=ABC[Math.floor(Math.random()*26)];
+  var cells='';
+  for(var r=0;r<SZ;r++) for(var c=0;c<SZ;c++) cells+='<div class="wfc" data-i="'+(r*SZ+c)+'">'+_wfGrid[r][c]+'</div>';
+  var tgts=_wfPlaced.map(function(p){return '<div class="wft" id="wft-'+p.word+'">'+p.word.toLowerCase()+'</div>';}).join('');
+  area.innerHTML='<div class="exc" style="overflow:auto">'
+    +'<div class="exlbl">&#128270; Word Find</div>'
+    +'<div class="exs">Find the English words hidden in the grid</div>'
+    +'<div style="overflow-x:auto;text-align:center"><div class="wfg" style="grid-template-columns:repeat('+SZ+',30px)" id="wfgrid">'+cells+'</div></div>'
+    +'<div class="wfts" id="wfts">'+tgts+'</div>'
+    +'<div class="fb" id="fb"></div></div>'
+    +'<button class="cbtn" id="cont-btn">Continue &#8594;</button>';
+  document.getElementById('cont-btn').addEventListener('click',advance);
+  var grid=document.getElementById('wfgrid');
+  grid.addEventListener('mousedown',function(e){var cell=e.target.closest('.wfc');if(!cell)return;_wfDown=true;_wfSel=[parseInt(cell.dataset.i)];wfHL();});
+  grid.addEventListener('mousemove',function(e){
+    if(!_wfDown)return;
+    var cell=e.target.closest('.wfc');if(!cell)return;
+    var ci=parseInt(cell.dataset.i),si=_wfSel[0];
+    var sr=Math.floor(si/SZ),sc2=si%SZ,er=Math.floor(ci/SZ),ec=ci%SZ;
+    var c2=[];
+    if(sr===er){var mn=Math.min(sc2,ec),mx=Math.max(sc2,ec);for(var cc=mn;cc<=mx;cc++)c2.push(sr*SZ+cc);}
+    else if(sc2===ec){var mn=Math.min(sr,er),mx=Math.max(sr,er);for(var rr=mn;rr<=mx;rr++)c2.push(rr*SZ+sc2);}
+    else c2=[si];
+    _wfSel=c2;wfHL();
+  });
+  document.addEventListener('mouseup',function onUp(){
+    if(!_wfDown)return;_wfDown=false;
+    var word=_wfSel.map(function(i){return (_wfGrid[Math.floor(i/SZ)]||[])[i%SZ]||'';}).join('');
+    var found=null;
+    _wfPlaced.forEach(function(p){
+      if(_wfFound.indexOf(p.word)!==-1)return;
+      var pc=[];for(var j=0;j<p.word.length;j++){var rr=p.dir==='v'?p.r+j:p.r,cc=p.dir==='h'?p.c+j:p.c;pc.push(rr*SZ+cc);}
+      var a=_wfSel.slice().sort(function(x,y){return x-y;}).join(',');
+      var b=pc.slice().sort(function(x,y){return x-y;}).join(',');
+      if(a===b)found=p;
+    });
+    if(found){
+      var g=document.getElementById('wfgrid');
+      if(g)_wfSel.forEach(function(i){var c=g.querySelector('[data-i="'+i+'"]');if(c){c.classList.remove('sel');c.classList.add('found');}});
+      _wfFound.push(found.word);
+      var tEl=document.getElementById('wft-'+found.word);if(tEl)tEl.classList.add('found');
+      L.xp+=10;speak(found.word.toLowerCase());
+      if(_wfFound.length>=_wfPlaced.length){showFB(true,'All found! +50 XP');L.xp+=40;L.correct++;var cb=document.getElementById('cont-btn');if(cb)cb.classList.add('show');L.answered=true;}
+    } else {
+      var g2=document.getElementById('wfgrid');
+      if(g2)g2.querySelectorAll('.wfc:not(.found)').forEach(function(c){c.classList.remove('sel');});
+    }
+    _wfSel=[];
+    document.removeEventListener('mouseup',onUp);
+    document.addEventListener('mouseup',onUp);
+  });
+}
+function wfHL(){
+  var g=document.getElementById('wfgrid');if(!g)return;
+  g.querySelectorAll('.wfc:not(.found)').forEach(function(c){c.classList.remove('sel');});
+  _wfSel.forEach(function(i){var c=g.querySelector('[data-i="'+i+'"]');if(c&&!c.classList.contains('found'))c.classList.add('sel');});
+}
+
+function showGO(){
+  if(!L)return;
+  var mH='';
+  if(L.mistakes.length){
+    mH='<div class="mlist">';
+    L.mistakes.slice(0,8).forEach(function(w){
+      mH+='<div class="mrow"><span class="mit" data-spk="'+w.en+'">'+w.en+'</span><span>'+w.tr+'</span></div>';
+    });
+    mH+='</div>';
+  } else {
+    mH='<div style="background:var(--s2);border-radius:9px;padding:13px;text-align:center;color:var(--t3);font-size:13px;margin-bottom:14px">No specific word mistakes.</div>';
+  }
+  document.getElementById('s-go').innerHTML='<div class="go-card">'
+    +'<div class="go-ic">&#128148;</div>'
+    +'<div class="go-ttl">Out of Hearts!</div>'
+    +'<div class="go-sub">Review these words and try again:</div>'
+    +mH
+    +'<div class="go-btns">'
+    +'<button class="go-b retry" id="go-retry">&#128260; Try Again</button>'
+    +'<button class="go-b home" id="go-home">&#127968; Main Menu</button>'
+    +'</div></div>';
+  document.getElementById('go-retry').addEventListener('click',function(){startLesson(L.uid);});
+  document.getElementById('go-home').addEventListener('click',showHome);
+  document.getElementById('s-go').querySelectorAll('[data-spk]').forEach(function(el){
+    el.addEventListener('click',function(){speak(el.dataset.spk);});
+  });
+  showScr('go');
+}
+
+function showComplete(){
+  if(!L)return;
+  var total=L.correct+(L.mistakes.length||0);
+  var acc=total>0?Math.round(L.correct/total*100):100;
+  S.xp+=L.xp;S.words+=L.unit.w.length;
+  if(S.done.indexOf(L.uid)===-1)S.done.push(L.uid);
+  S.prog[L.uid]=100;S.streak++;saveS();
+  var ni=0;for(var i=0;i<UNITS.length;i++){if(UNITS[i].id===L.uid){ni=i+1;break;}}
+  var nxt=UNITS[ni]||null;
+  var rows='';
+  L.unit.w.map(mkW).forEach(function(w){
+    rows+='<div class="cp-row">'
+      +'<span class="cp-en" data-spk="'+w.en+'">'+w.en+'</span>'
+      +'<span style="color:var(--t2)">'+w.tr+'</span>'
+      +'<button class="lbtn" data-spk="'+w.en+'" style="margin:0;padding:2px 7px;font-size:11px">&#128266;</button>'
+      +'</div>';
+  });
+  document.getElementById('s-cp').innerHTML='<div class="cp-card">'
+    +'<div class="cp-tr">&#127942;</div>'
+    +'<div class="cp-ttl">WELL DONE!</div>'
+    +'<div style="color:var(--t2);font-size:13px;margin-top:4px">'+L.unit.label+' &middot; Complete!</div>'
+    +'<div class="cp-stats">'
+    +'<div class="cps"><div class="v">'+L.xp+'</div><div class="l">XP</div></div>'
+    +'<div class="cps"><div class="v">'+acc+'%</div><div class="l">Accuracy</div></div>'
+    +'<div class="cps"><div class="v">'+L.unit.w.length+'</div><div class="l">Words</div></div>'
+    +'<div class="cps"><div class="v">'+L.exs.length+'</div><div class="l">Exercises</div></div>'
+    +'</div>'
+    +'<div class="cp-voc"><div class="cp-vh">Words in this lesson</div>'+rows+'</div>'
+    +'<div class="cp-btns">'
+    +'<button class="cp-btn home" id="cp-home">&#127968; Home</button>'
+    +(nxt?'<button class="cp-btn next" id="cp-next">&#9654; '+nxt.label+'</button>':'<button class="cp-btn next" id="cp-next">&#127881; All Done!</button>')
+    +'</div></div>';
+  document.getElementById('cp-home').addEventListener('click',showHome);
+  document.getElementById('cp-next').addEventListener('click',function(){nxt?startLesson(nxt.id):showHome();});
+  document.getElementById('s-cp').querySelectorAll('[data-spk]').forEach(function(el){
+    el.addEventListener('click',function(){speak(el.dataset.spk);});
+  });
+  showScr('cp');
+}
+
+// ── INIT ──
+if(window.innerWidth<768){
+  document.addEventListener('DOMContentLoaded',function(){
+    var sb=document.getElementById('sb');
+    var btn=document.getElementById('sb-toggle');
+    if(sb)sb.classList.add('collapsed');
+    if(btn){btn.innerHTML='&#9776;';btn.style.left='12px';}
+  });
+}
+showHome();
+
+</script>
+</body>
+</html>
